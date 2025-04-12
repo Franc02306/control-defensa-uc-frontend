@@ -1,0 +1,53 @@
+# === NORMALIZACIÓN DE EOL A LF PARA TODOS LOS ARCHIVOS DE TEXTO ===
+* text=auto eol=lf
+
+# === FRONTEND: React, Vite, TypeScript, etc. ===
+*.js     text eol=lf
+*.jsx    text eol=lf
+*.ts     text eol=lf
+*.tsx    text eol=lf
+*.css    text eol=lf
+*.scss   text eol=lf
+*.html   text eol=lf
+*.json   text eol=lf
+*.md     text eol=lf
+*.yml    text eol=lf
+*.yaml   text eol=lf
+*.xml    text eol=lf
+
+# === ARCHIVOS DE CONFIGURACIÓN ===
+*.gitignore       text eol=lf
+*.eslintrc        text eol=lf
+*.eslintrc.js     text eol=lf
+*.eslintignore    text eol=lf
+*.prettierrc      text eol=lf
+*.prettierrc.js   text eol=lf
+*.editorconfig    text eol=lf
+*.env             text eol=lf
+*.nvmrc           text eol=lf
+*.npmrc           text eol=lf
+.vite.config.js   text eol=lf
+
+# === BLOQUEO DE LOCKFILES COMO TEXTO PLANO ===
+package-lock.json text eol=lf
+pnpm-lock.yaml    text eol=lf
+yarn.lock         text eol=lf
+
+# === TRATAMIENTO DE BINARIOS: NO TOCAR EOL ===
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.svg     binary
+*.ico     binary
+*.webp    binary
+*.ttf     binary
+*.woff    binary
+*.woff2   binary
+*.eot     binary
+*.pdf     binary
+*.zip     binary
+
+# === CARPETAS DE BUILD/PRODUCCIÓN ===
+/dist/**  binary
+/build/** binary
