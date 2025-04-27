@@ -1,0 +1,23 @@
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: #e6f0ff; /* fondo azul académico */
+  padding: 1rem; /* para que en móviles no se pegue a los bordes */
+  box-sizing: border-box; /* que respete el padding */
+}
+
+.login-card {
+  width: 100%;
+  max-width: 400px; /* límite de ancho */
+  padding: 2.5rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  background: #fff; /* asegurar que sea blanco */
+}
+
+.register-link {
+  margin-top: 1rem;
+  text-align: center;
+}
