@@ -4,19 +4,27 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 
+import { login } from "../../services/authService";
 import "./Login.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
     if (!username || !password) {
       alert("Por favor completa todos los campos.");
       return;
     }
-    console.log("Iniciando sesión con:", username, password);
-    // Aquí luego llamaremos a tu API de login
+
+    try {
+      const response = await login({ username, password });
+
+      console.log("exito: ", response);
+    } catch (error) {
+      console.error("Error al iniciar sesión:", error);
+      alert(error.response?.data?.message || "Error al iniciar sesión.");
+    }
   };
 
   return (
