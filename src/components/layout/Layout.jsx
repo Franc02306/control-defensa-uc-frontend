@@ -1,5 +1,6 @@
 import Header from "./Header";
 import Footer from "./Footer";
+import SidebarMenu from "./SidebarMenu";
 
 const Layout = ({ children }) => {
   return (
@@ -7,7 +8,10 @@ const Layout = ({ children }) => {
       style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
     >
       <Header />
-      <main style={{ flex: "1" }}>{children}</main>
+      <SidebarMenu />
+      <main style={{ flex: "1", marginLeft: "16rem", padding: "1rem" }}>
+        {children}
+      </main>
       <Footer />
     </div>
   );
