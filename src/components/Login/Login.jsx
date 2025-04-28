@@ -5,11 +5,13 @@ import { Button } from "primereact/button";
 import { Card } from "primereact/card";
 
 import { login } from "../../services/authService";
+import { useNavigate } from "react-router-dom";
 import "./Login.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
   const handleLogin = async () => {
     if (!username || !password) {
@@ -21,6 +23,14 @@ const Login = () => {
       const response = await login({ username, password });
 
       console.log("exito: ", response);
+
+      const token = response.data.data.token;
+
+      // Guardar el token en el localStorage
+      localStorage.setItem('token', token);
+
+      navigate('/home');
+
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
       alert(error.response?.data?.message || "Error al iniciar sesión.");
