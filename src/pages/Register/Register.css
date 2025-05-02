@@ -1,0 +1,51 @@
+.password-rules {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* Dos columnas iguales */
+  gap: 0.3rem 1.5rem; /* Espacio vertical y horizontal */
+  max-width: 100%;
+}
+
+.password-rules .valid {
+  color: green;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.password-rules .invalid {
+  color: red;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.password-rules i {
+  font-size: 0.9rem;
+}
+
+/* Estilo principal del contenedor */
+.register-container {
+  display: flex;
+  justify-content: center;
+  padding-top: 3rem;
+  padding-bottom: 3rem;
+  background-color: #e6f0ff;
+  min-height: 100dvh;
+  box-sizing: border-box;
+}
+
+/* Card adaptativo que no deja espacio feo en pantallas grandes */
+.login-card.p-card {
+  width: 100%;
+  max-width: 680px;
+  padding: 2rem;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
+  margin-top: auto;
+  margin-bottom: auto;
+}

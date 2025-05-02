@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
+import { Toast } from "primereact/Toast";
 import { Card } from "primereact/card";
 
 import { login } from "../../services/authService";
@@ -13,32 +14,49 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
 
+  const toast = useRef(null);
+
   const handleLogin = async () => {
     if (!username || !password) {
-      alert("Por favor completa todos los campos.");
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Por favor completa todos los campos.",
+        life: 3000,
+      });
       return;
     }
 
     try {
       const response = await login({ username, password });
-
-      console.log("exito: ", response);
-
       const token = response.data.data.token;
 
       // Guardar el token en el localStorage
-      localStorage.setItem('token', token);
+      localStorage.setItem("token", token);
 
-      navigate('/home');
+      toast.current.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Inicio de sesión exitoso",
+        life: 2000,
+      });
 
+      setTimeout(() => navigate("/home"), 1500);
     } catch (error) {
       console.error("Error al iniciar sesión:", error);
-      alert(error.response?.data?.message || "Error al iniciar sesión.");
+
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.response?.data?.message || "Error al iniciar sesión.",
+        life: 4000,
+      });
     }
   };
 
   return (
     <div className="login-container">
+      <Toast ref={toast} />
       <Card title="Iniciar Sesión" className="login-card">
         <div className="p-fluid">
           <div className="field">
@@ -69,7 +87,7 @@ const Login = () => {
           />
 
           <div className="register-link">
-            ¿Eres nuevo? <a href="#">Regístrate aquí</a>
+            ¿Eres nuevo? <a href="/register">Regístrate aquí</a>
           </div>
         </div>
       </Card>

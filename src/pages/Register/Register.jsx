@@ -1,0 +1,252 @@
+import React, { useState, useRef } from "react";
+import { InputText } from "primereact/inputtext";
+import { Password } from "primereact/password";
+import { Button } from "primereact/button";
+import { Card } from "primereact/card";
+import { Toast } from "primereact/Toast";
+import { useNavigate } from "react-router-dom";
+import { registerUser } from "../../services/userService";
+import "./Register.css";
+
+const Register = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    username: "",
+    email: "",
+    password: "",
+  });
+
+  const toast = useRef(null);
+  const navigate = useNavigate();
+
+  const handleChange = (e, field) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+  const passwordRules = {
+    length: formData.password.length >= 8,
+    upper: /[A-Z]/.test(formData.password),
+    lower: /[a-z]/.test(formData.password),
+    number: /\d/.test(formData.password),
+    symbol: /[^A-Za-z0-9]/.test(formData.password),
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    try {
+      const response = await registerUser({ ...formData, status: true });
+
+      toast.current.show({
+        severity: "success",
+        summary: "Usuario creado",
+        detail: "Ahora puedes iniciar sesión",
+        life: 2500,
+      });
+
+      setTimeout(() => {
+        navigate("/login");
+      }, 2000);
+    } catch (error) {
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          error.response?.data?.data || "No se pudo registrar el usuario.",
+        life: 4000,
+      });
+    }
+  };
+
+  const validateForm = () => {
+    const { firstName, lastName, username, email, password } = formData;
+
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const usernameRegex = /^[a-zA-Z0-9._]{4,20}$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+
+    if (!firstName || !lastName || !username || !email || !password) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Por favor completa todos los campos.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!nameRegex.test(firstName)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Nombre solo deben contener letras.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!nameRegex.test(lastName)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Apellido solo deben contener letras.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!usernameRegex.test(username)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail:
+          "El Nombre de Usuario solo permite letras, números, puntos y guiones bajos.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!emailRegex.test(email)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "El correo electrónico no es válido.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!passwordRegex.test(password)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail:
+          "La contraseña no es fuerte, tener al menos 8 caracteres, una mayúscula, una minúscula, un número y un símbolo.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  return (
+    <div className="register-container">
+      <Toast ref={toast} />
+
+      <Card title="Crear una cuenta" className="login-card">
+        <div className="p-fluid">
+          <div className="field">
+            <label htmlFor="firstName">Nombre</label>
+            <InputText
+              id="firstName"
+              value={formData.firstName}
+              onChange={(e) => handleChange(e, "firstName")}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="lastName">Apellido</label>
+            <InputText
+              id="lastName"
+              value={formData.lastName}
+              onChange={(e) => handleChange(e, "lastName")}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="username">Nombre de usuario</label>
+            <InputText
+              id="username"
+              value={formData.username}
+              onChange={(e) => handleChange(e, "username")}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="email">Correo electrónico</label>
+            <InputText
+              id="email"
+              value={formData.email}
+              onChange={(e) => handleChange(e, "email")}
+            />
+          </div>
+
+          <div className="field">
+            <label htmlFor="password">Contraseña</label>
+            <Password
+              id="password"
+              value={formData.password}
+              onChange={(e) => handleChange(e, "password")}
+              toggleMask
+              feedback={false}
+            />
+
+            {/* Validadores de contraseña en tiempo real */}
+            <div className="password-rules">
+              <div className={passwordRules.length ? "valid" : "invalid"}>
+                <i
+                  className={`pi ${
+                    passwordRules.length ? "pi-check" : "pi-times"
+                  }`}
+                ></i>
+                <span> Al menos 8 caracteres</span>
+              </div>
+              <div className={passwordRules.upper ? "valid" : "invalid"}>
+                <i
+                  className={`pi ${
+                    passwordRules.upper ? "pi-check" : "pi-times"
+                  }`}
+                ></i>
+                <span> Una letra mayúscula</span>
+              </div>
+              <div className={passwordRules.lower ? "valid" : "invalid"}>
+                <i
+                  className={`pi ${
+                    passwordRules.lower ? "pi-check" : "pi-times"
+                  }`}
+                ></i>
+                <span> Una letra minúscula</span>
+              </div>
+              <div className={passwordRules.number ? "valid" : "invalid"}>
+                <i
+                  className={`pi ${
+                    passwordRules.number ? "pi-check" : "pi-times"
+                  }`}
+                ></i>
+                <span> Un número</span>
+              </div>
+              <div className={passwordRules.symbol ? "valid" : "invalid"}>
+                <i
+                  className={`pi ${
+                    passwordRules.symbol ? "pi-check" : "pi-times"
+                  }`}
+                ></i>
+                <span> Un símbolo</span>
+              </div>
+            </div>
+          </div>
+
+          <Button
+            label="Registrarse"
+            icon="pi pi-user-plus"
+            onClick={handleSubmit}
+            className="p-mt-3"
+          />
+
+          <div
+            className="register-link"
+            style={{ marginTop: "1rem", textAlign: "center" }}
+          >
+            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+          </div>
+        </div>
+      </Card>
+    </div>
+  );
+};
+
+export default Register;
