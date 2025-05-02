@@ -15,6 +15,7 @@ const Register = () => {
     username: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
 
   const toast = useRef(null);
@@ -38,10 +39,12 @@ const Register = () => {
     try {
       const response = await registerUser({ ...formData, status: true });
 
+      const { firstName, lastName } = response.data.data;
+
       toast.current.show({
         severity: "success",
-        summary: "Usuario creado",
-        detail: "Ahora puedes iniciar sesión",
+        summary: "Éxito",
+        detail: `Bienvenido, ${firstName} ${lastName}`,
         life: 2500,
       });
 
@@ -53,7 +56,7 @@ const Register = () => {
         severity: "error",
         summary: "Error",
         detail:
-          error.response?.data?.data || "No se pudo registrar el usuario.",
+          error.response?.data?.message || "No se pudo registrar el usuario.",
         life: 4000,
       });
     }
@@ -130,6 +133,16 @@ const Register = () => {
       return false;
     }
 
+    if (formData.password !== formData.confirmPassword) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Las contraseñas no coinciden.",
+        life: 4000,
+      });
+      return false;
+    }
+
     return true;
   };
 
@@ -145,7 +158,13 @@ const Register = () => {
               id="firstName"
               value={formData.firstName}
               onChange={(e) => handleChange(e, "firstName")}
+              maxLength={100}
             />
+            {formData.firstName.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 carácteres permitidos
+              </small>
+            )}
           </div>
 
           <div className="field">
@@ -154,7 +173,13 @@ const Register = () => {
               id="lastName"
               value={formData.lastName}
               onChange={(e) => handleChange(e, "lastName")}
+              maxLength={100}
             />
+            {formData.lastName.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 carácteres permitidos
+              </small>
+            )}
           </div>
 
           <div className="field">
@@ -163,7 +188,13 @@ const Register = () => {
               id="username"
               value={formData.username}
               onChange={(e) => handleChange(e, "username")}
+              maxLength={50}
             />
+            {formData.username.length >= 50 && (
+              <small className="p-error">
+                Máximo 50 caracteres permitidos.
+              </small>
+            )}
           </div>
 
           <div className="field">
@@ -172,7 +203,13 @@ const Register = () => {
               id="email"
               value={formData.email}
               onChange={(e) => handleChange(e, "email")}
+              maxLength={100}
             />
+            {formData.email.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 caracteres permitidos.
+              </small>
+            )}
           </div>
 
           <div className="field">
@@ -183,7 +220,49 @@ const Register = () => {
               onChange={(e) => handleChange(e, "password")}
               toggleMask
               feedback={false}
+              maxLength={100}
+              onPaste={(e) => {
+                e.preventDefault();
+                toast.current.show({
+                  severity: "info",
+                  summary: "Información",
+                  detail: "Por seguridad, no se permite pegar en este campo.",
+                  life: 3000,
+                });
+              }}
             />
+
+            {formData.password.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 caracteres permitidos.
+              </small>
+            )}
+          </div>
+
+          <div className="field">
+            <label htmlFor="confirmPassword">Confirmar contraseña</label>
+            <Password
+              id="confirmPassword"
+              value={formData.confirmPassword}
+              onChange={(e) => handleChange(e, "confirmPassword")}
+              toggleMask
+              feedback={false}
+              maxLength={100}
+              onPaste={(e) => {
+                e.preventDefault();
+                toast.current.show({
+                  severity: "info",
+                  summary: "Información",
+                  detail: "Por seguridad, no se permite pegar en este campo.",
+                  life: 3000,
+                });
+              }}
+            />
+            {formData.confirmPassword.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 caracteres permitidos.
+              </small>
+            )}
 
             {/* Validadores de contraseña en tiempo real */}
             <div className="password-rules">
@@ -226,6 +305,24 @@ const Register = () => {
                   }`}
                 ></i>
                 <span> Un símbolo</span>
+              </div>
+              <div
+                className={
+                  formData.confirmPassword &&
+                  formData.password === formData.confirmPassword
+                    ? "valid"
+                    : "invalid"
+                }
+              >
+                <i
+                  className={`pi ${
+                    formData.confirmPassword &&
+                    formData.password === formData.confirmPassword
+                      ? "pi-check"
+                      : "pi-times"
+                  }`}
+                ></i>
+                <span> Las contraseñas deben coincidir</span>
               </div>
             </div>
           </div>
