@@ -1,11 +1,28 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
+import Swal from "sweetalert2";
 
 const Header = () => {
   const navigate = useNavigate();
 
+  const { logout } = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    navigate("/login");
+    window.dispatchEvent(new Event("cerrarSidebar"));
+
+    Swal.fire({
+      icon: "success",
+      title: "Sesión cerrada",
+      text: "Usted ha cerrado sesión. Será redirigido al login.",
+      timer: 3000,
+      timerProgressBar: true,
+      showConfirmButton: false,
+      allowOutsideClick: false,
+      willClose: () => {
+        logout();
+        navigate("/login");
+      },
+    });
   };
 
   return (

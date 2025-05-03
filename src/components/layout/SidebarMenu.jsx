@@ -2,8 +2,10 @@ import { useState, useEffect } from "react";
 import { Sidebar } from "primereact/sidebar";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
+import { useAuth } from "../../context/AuthContext";
 
 const SidebarMenu = () => {
+  const { token } = useAuth();
   const [visible, setVisible] = useState(true); // Mostrar por defecto
   const [isMobile, setIsMobile] = useState(false);
 
@@ -18,11 +20,24 @@ const SidebarMenu = () => {
       }
     };
 
-    window.addEventListener("resize", handleResize);
-    handleResize(); // Ejecutar al cargar
+    const handleCerrarSidebar = () => setVisible(false);
 
-    return () => window.removeEventListener("resize", handleResize);
+    window.addEventListener("resize", handleResize);
+    window.addEventListener("cerrarSidebar", handleCerrarSidebar);
+
+    handleResize();
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("cerrarSidebar", handleCerrarSidebar);
+    };
   }, []);
+
+  useEffect(() => {
+    if (!token) {
+      setVisible(false);
+    }
+  }, [token]);
 
   const items = [
     {
@@ -48,6 +63,8 @@ const SidebarMenu = () => {
     },
   ];
 
+  if (!token) return null;
+
   return (
     <>
       {/* Botón para abrir/cerrar */}
@@ -67,10 +84,10 @@ const SidebarMenu = () => {
       <Sidebar
         visible={visible}
         onHide={() => setVisible(false)}
-        modal={isMobile} // Solo bloquea la pantalla en móviles
+        modal={isMobile}
         showCloseIcon={false}
         style={{ width: isMobile ? "16rem" : "16rem" }}
-        dismissable={isMobile}
+        dismissable={token && isMobile}
       >
         <h2>Menú</h2>
         <Menu model={items} />

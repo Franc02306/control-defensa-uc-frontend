@@ -7,16 +7,19 @@ import { Card } from "primereact/card";
 
 import { login } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import "./Login.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const { login: loginContext } = useAuth();
   const navigate = useNavigate();
-
   const toast = useRef(null);
 
-  const handleLogin = async () => {
+  const handleLogin = async (e) => {
+    if (e) e.preventDefault();
+
     if (!username || !password) {
       toast.current.show({
         severity: "warn",
@@ -32,7 +35,7 @@ const Login = () => {
       const token = response.data.data.token;
 
       // Guardar el token en el localStorage
-      localStorage.setItem("token", token);
+      loginContext(token);
 
       toast.current.show({
         severity: "success",
@@ -58,7 +61,7 @@ const Login = () => {
     <div className="login-container">
       <Toast ref={toast} />
       <Card title="Iniciar Sesión" className="login-card">
-        <div className="p-fluid">
+        <form className="p-fluid" onSubmit={handleLogin}>
           <div className="field">
             <label htmlFor="username">Usuario</label>
             <InputText
@@ -82,14 +85,14 @@ const Login = () => {
           <Button
             label="Ingresar"
             icon="pi pi-sign-in"
-            onClick={handleLogin}
+            type="submit"
             className="p-mt-3"
           />
 
           <div className="register-link">
             ¿Eres nuevo? <a href="/register">Regístrate aquí</a>
           </div>
-        </div>
+        </form>
       </Card>
     </div>
   );
