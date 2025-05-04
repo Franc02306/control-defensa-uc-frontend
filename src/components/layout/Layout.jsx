@@ -9,9 +9,7 @@ const Layout = ({ children }) => {
     >
       <Header />
       <SidebarMenu />
-      <main style={{ flex: "1", marginLeft: "16rem", padding: "1rem" }}>
-        {children}
-      </main>
+      <main style={{ flex: "1", padding: "1rem" }}>{children}</main>
       <Footer />
     </div>
   );

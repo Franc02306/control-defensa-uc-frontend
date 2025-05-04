@@ -1,11 +1,25 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
+import { useEffect, useState } from "react";
 
 const Header = () => {
   const navigate = useNavigate();
-
   const { logout } = useAuth();
+  const [sidebarVisible, setSidebarVisible] = useState(window.innerWidth > 768);
+
+  useEffect(() => {
+    const handleSidebarToggle = (e) => setSidebarVisible(e.detail);
+    const handleResize = () => setSidebarVisible(window.innerWidth > 768);
+
+    window.addEventListener("sidebarToggle", handleSidebarToggle);
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("sidebarToggle", handleSidebarToggle);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
 
   const handleLogout = () => {
     window.dispatchEvent(new Event("cerrarSidebar"));
@@ -25,18 +39,34 @@ const Header = () => {
     });
   };
 
+  const headerStyle = {
+    backgroundColor: "#004080",
+    color: "white",
+    padding: "1rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingLeft: sidebarVisible && window.innerWidth > 768 ? "16rem" : "1rem",
+    transition: "padding-left 0.3s ease",
+  };
+
   return (
-    <header
-      style={{
-        backgroundColor: "#004080",
-        color: "white",
-        padding: "1rem",
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-      }}
-    >
-      <h1>Defensa UC</h1>
+    <header style={headerStyle}>
+      {/* Botón menú hamburguesa */}
+      <button
+        onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
+        style={{
+          backgroundColor: "transparent",
+          border: "none",
+          color: "white",
+          fontSize: "1.5rem",
+          marginRight: "1rem",
+          cursor: "pointer",
+        }}
+      >
+        <i className="pi pi-bars"></i>
+      </button>
+      <h1 style={{ margin: 0 }}>Defensa UC</h1>
       <button
         onClick={handleLogout}
         style={{

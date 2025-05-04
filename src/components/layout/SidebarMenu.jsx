@@ -1,43 +1,56 @@
 import { useState, useEffect } from "react";
 import { Sidebar } from "primereact/sidebar";
-import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { useAuth } from "../../context/AuthContext";
 
 const SidebarMenu = () => {
   const { token } = useAuth();
-  const [visible, setVisible] = useState(true); // Mostrar por defecto
-  const [isMobile, setIsMobile] = useState(false);
+  const [visible, setVisible] = useState(false); // Mostrar por defecto
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
   useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth <= 768) {
-        setVisible(false);
-        setIsMobile(true);
-      } else {
-        setVisible(true);
-        setIsMobile(false);
-      }
+    const handleAbrirSidebar = () => {
+      setVisible((prev) => {
+        const newState = !prev;
+        window.dispatchEvent(
+          new CustomEvent("sidebarToggle", { detail: newState })
+        );
+        return newState;
+      });
     };
 
-    const handleCerrarSidebar = () => setVisible(false);
+    const handleCerrarSidebar = () => {
+      setVisible(false);
+      window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: false }));
+    };
 
-    window.addEventListener("resize", handleResize);
+    const handleResize = () => {
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+    };
+
+    window.addEventListener("toggleSidebar", handleAbrirSidebar);
     window.addEventListener("cerrarSidebar", handleCerrarSidebar);
-
-    handleResize();
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener("resize", handleResize);
+      window.removeEventListener("toggleSidebar", handleAbrirSidebar);
       window.removeEventListener("cerrarSidebar", handleCerrarSidebar);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
 
   useEffect(() => {
     if (!token) {
       setVisible(false);
+      window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: false }));
     }
   }, [token]);
+
+  useEffect(() => {
+    // Emitimos el estado actual al montar (evita que Header asuma que está abierto al inicio)
+    window.dispatchEvent(new CustomEvent("sidebarToggle", { detail: visible }));
+  }, []);
 
   const items = [
     {
@@ -67,23 +80,15 @@ const SidebarMenu = () => {
 
   return (
     <>
-      {/* Botón para abrir/cerrar */}
-      <Button
-        icon="pi pi-bars"
-        onClick={() => setVisible(!visible)}
-        className="p-button-text p-button-plain"
-        style={{
-          position: "fixed",
-          top: "1rem",
-          left: isMobile ? "1rem" : "16rem",
-          zIndex: "1001",
-        }}
-      />
-
       {/* Sidebar */}
       <Sidebar
         visible={visible}
-        onHide={() => setVisible(false)}
+        onHide={() => {
+          setVisible(false);
+          window.dispatchEvent(
+            new CustomEvent("sidebarToggle", { detail: false })
+          );
+        }}
         modal={isMobile}
         showCloseIcon={false}
         style={{ width: isMobile ? "16rem" : "16rem" }}
