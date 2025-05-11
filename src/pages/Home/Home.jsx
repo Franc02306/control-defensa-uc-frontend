@@ -5,7 +5,7 @@ const Home = () => {
     <Layout>
       <div style={{ textAlign: "center", marginTop: "2rem" }}>
         <h2>Bienvenido al Sistema de Defensa</h2>
-        <p>Ya estás autenticado. Esta es tu página de inicio.</p>
+        <p>Bienvenido, estas en el menú principal.</p>
       </div>
     </Layout>
   );

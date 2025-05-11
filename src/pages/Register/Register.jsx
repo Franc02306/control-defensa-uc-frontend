@@ -44,7 +44,7 @@ const Register = () => {
       toast.current.show({
         severity: "success",
         summary: "Éxito",
-        detail: `Bienvenido, ${firstName} ${lastName}`,
+        detail: `Bienvenido, ${firstName} ${lastName}.`,
         life: 2500,
       });
 

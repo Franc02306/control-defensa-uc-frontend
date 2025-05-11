@@ -40,7 +40,7 @@ const Login = () => {
       toast.current.show({
         severity: "success",
         summary: "Éxito",
-        detail: "Inicio de sesión exitoso",
+        detail: "Inicio de sesión exitoso.",
         life: 2000,
       });
 
@@ -90,7 +90,7 @@ const Login = () => {
           />
 
           <div className="register-link">
-            ¿Eres nuevo? <a href="/register">Regístrate aquí</a>
+            ¿Eres nuevo? <a href="/registro-de-usuario">Regístrate aquí</a>
           </div>
         </form>
       </Card>

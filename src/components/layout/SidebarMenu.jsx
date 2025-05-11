@@ -64,7 +64,7 @@ const SidebarMenu = () => {
       label: "Estudiantes",
       icon: "pi pi-users",
       command: () => {
-        window.location.href = "/profile";
+        window.location.href = "/estudiantes";
       },
     },
     {
