@@ -3,7 +3,7 @@ import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Card } from "primereact/card";
-import { Toast } from "primereact/Toast";
+import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/userService";
 import "./Register.css";

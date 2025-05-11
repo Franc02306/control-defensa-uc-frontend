@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import { InputText } from "primereact/inputtext";
 import { Password } from "primereact/password";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/Toast";
+import { Toast } from "primereact/toast";
 import { Card } from "primereact/card";
 
 import { login } from "../../services/authService";

@@ -9,3 +9,7 @@ export const searchStudents = (name, year, province) => {
     },
   });
 };
+
+export const deleteStudent = (id) => {
+  return API.delete(`/student/${id}`);
+};

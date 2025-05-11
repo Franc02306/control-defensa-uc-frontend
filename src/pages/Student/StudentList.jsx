@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
-import { searchStudents } from "../../services/studentService";
+import { searchStudents, deleteStudent } from "../../services/studentService";
 import { getProvinces } from "../../services/locationService";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
@@ -7,6 +7,7 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
+import { useNavigate } from "react-router-dom";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -16,6 +17,7 @@ const StudentList = () => {
   const [searchProvince, setSearchProvince] = useState(null);
   const [loading, setLoading] = useState(false);
   const toast = useRef(null);
+  const navigate = useNavigate();
 
   const yearOptions = [
     { label: "1", value: 1 },
@@ -80,53 +82,197 @@ const StudentList = () => {
     fetchStudents("", "", "");
   };
 
-  const genderTemplate = (row) => (row.gender === "M" ? "Male" : "Female");
+  const genderTemplate = (row) =>
+    row.gender === "M" ? "Masculino" : "Femenino";
 
   const addressTemplate = (row) =>
     row.address
       ? `${row.address.street} ${row.address.number}, ${row.address.municipality}, ${row.address.province}`
       : "-";
 
+  const actionsTemplate = (row) => {
+    return (
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        <Button
+          icon="pi pi-eye"
+          className="p-button-text p-button-plain p-button-sm"
+          tooltip="Ver Detalles"
+          onClick={() => navigate(`/students/details/${row.id}`)}
+          style={{
+            padding: "0.25rem",
+            fontSize: "1rem",
+            color: "#007bff",
+          }}
+        />
+        <Button
+          icon="pi pi-pencil"
+          className="p-button-text p-button-plain p-button-sm"
+          tooltip="Editar"
+          onClick={() => navigate(`/students/edit/${row.id}`)}
+          style={{
+            padding: "0.25rem",
+            fontSize: "1rem",
+            color: "#28a745",
+          }}
+        />
+        <Button
+          icon="pi pi-trash"
+          className="p-button-text p-button-plain p-button-sm"
+          tooltip="Eliminar"
+          onClick={() => handleDeleteStudent(row.id)}
+          style={{
+            padding: "0.25rem",
+            fontSize: "1rem",
+            color: "#dc3545",
+          }}
+        />
+      </div>
+    );
+  };
+
+  const handleDeleteStudent = async (studentId) => {
+    try {
+      const confirm = window.confirm(
+        "¿Estás seguro de eliminar este estudiante?"
+      );
+      if (!confirm) return;
+
+      // Aquí llamas a tu API para eliminar el estudiante
+      await deleteStudent(studentId); // Esta es la función que debes implementar en tu servicio
+      toast.current?.show({
+        severity: "success",
+        summary: "Éxito",
+        detail: "Estudiante eliminado correctamente.",
+        life: 3000,
+      });
+
+      // Actualiza la lista después de eliminar
+      fetchStudents(searchName, searchYear, searchProvince);
+    } catch (error) {
+      toast.current?.show({
+        severity: "error",
+        summary: "Error",
+        detail:
+          error.response?.data?.message || "Error al eliminar el estudiante.",
+        life: 4000,
+      });
+    }
+  };
+
   return (
-    <div className="card">
+    <div
+      className="card"
+      style={{
+        padding: "1rem",
+        borderRadius: "12px",
+        backgroundColor: "#f9f9f9",
+      }}
+    >
       <Toast ref={toast} />
-      <h2>Lista de Estudiantes</h2>
-      <div className="p-inputgroup" style={{ marginBottom: "1rem" }}>
+      <h2 style={{ marginBottom: "1rem" }}>Lista de Estudiantes</h2>
+
+      <div
+        style={{
+          display: "flex",
+          gap: "0.5rem",
+          alignItems: "center",
+          marginBottom: "1rem",
+          flexWrap: "wrap",
+        }}
+      >
         <InputText
           value={searchName}
           onChange={(e) => setSearchName(e.target.value)}
           placeholder="Buscar por Nombre..."
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            flex: "0.5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 1rem", // Espaciado interno para mejor visualización
+          }}
         />
         <Dropdown
           value={searchYear}
           options={yearOptions}
           onChange={(e) => setSearchYear(e.value)}
           placeholder="Buscar por Año..."
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            flex: "0.5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 1rem", // Espaciado interno para mejor visualización
+          }}
         />
         <Dropdown
           value={searchProvince}
           options={provinces}
           onChange={(e) => setSearchProvince(e.value)}
           placeholder="Buscar por Provincia..."
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            flex: "0.5",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "0 1rem", // Espaciado interno para mejor visualización
+          }}
         />
-        <Button label="Search" icon="pi pi-search" onClick={handleSearch} />
         <Button
-          label="Limpiar filtros"
-          icon="pi pi-times"
+          label="Buscar"
+          icon="pi pi-search"
+          onClick={handleSearch}
+          className="p-button-primary"
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            padding: "0.5rem 1rem",
+          }}
+        />
+        <Button
+          icon="pi pi-eraser"
           className="p-button-secondary"
           onClick={handleClearFilters}
+          tooltip="Limpiar filtros"
+          tooltipOptions={{ position: "top" }}
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            padding: "0.5rem 1rem",
+          }}
         />
       </div>
 
-      <DataTable value={students} loading={loading} paginator rows={10}>
+      <DataTable
+        value={students}
+        loading={loading}
+        paginator
+        rows={10}
+        style={{
+          borderRadius: "12px",
+          overflow: "hidden",
+          border: "1px solid #ddd",
+        }}
+        className="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+        emptyMessage={
+          <div style={{ textAlign: "center" }}>
+            No se encontraron estudiantes.
+          </div>
+        }
+      >
         <Column field="firstName" header="Nombres" />
         <Column field="lastName" header="Apellidos" />
         <Column header="Género" body={genderTemplate} />
         <Column field="major" header="Carrera" />
         <Column field="year" header="Año" />
         <Column header="Dirección" body={addressTemplate} />
-        {/* <Column header="Birth Date" body={birthDateTemplate} /> */}
-        {/* <Column header="Average" body={averageTemplate} /> */}
+        <Column header="Acciones" body={actionsTemplate} />
       </DataTable>
     </div>
   );
