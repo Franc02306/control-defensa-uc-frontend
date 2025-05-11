@@ -5,7 +5,7 @@ import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
 import { Button } from "primereact/button";
-import { Toast } from "primereact/Toast";
+import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 
 const StudentList = () => {
@@ -119,14 +119,14 @@ const StudentList = () => {
       </div>
 
       <DataTable value={students} loading={loading} paginator rows={10}>
-        <Column field="firstName" header="First Name" />
-        <Column field="lastName" header="Last Name" />
-        <Column header="Gender" body={genderTemplate} />
+        <Column field="firstName" header="Nombres" />
+        <Column field="lastName" header="Apellidos" />
+        <Column header="Género" body={genderTemplate} />
+        <Column field="major" header="Carrera" />
+        <Column field="year" header="Año" />
+        <Column header="Dirección" body={addressTemplate} />
         {/* <Column header="Birth Date" body={birthDateTemplate} /> */}
-        <Column field="major" header="Major" />
-        <Column field="year" header="Year" />
         {/* <Column header="Average" body={averageTemplate} /> */}
-        <Column header="Address" body={addressTemplate} />
       </DataTable>
     </div>
   );
