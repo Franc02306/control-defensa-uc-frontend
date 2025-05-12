@@ -3,6 +3,7 @@ import Login from "../components/Login/Login";
 import Register from "../pages/Register/Register";
 import Home from "../pages/Home/Home";
 import StudentList from "../pages/Student/StudentList";
+import StudentForm from "../pages/Student/StudentForm";
 import Layout from "../components/layout/Layout";
 import { useAuth } from "../context/AuthContext";
 
@@ -22,6 +23,8 @@ const AppRouter = () => {
           <Route element={<Layout />}>
             <Route path="/home" element={<Home />} />
             <Route path="/estudiantes" element={<StudentList />} />
+            <Route path="/estudiantes/crear" element={<StudentForm />} />
+            <Route path="/estudiantes/editar/:id" element={<StudentForm />} />
             <Route path="*" element={<Navigate to="/home" replace />} />
           </Route>
         )}

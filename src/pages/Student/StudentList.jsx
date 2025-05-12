@@ -182,7 +182,7 @@ const StudentList = () => {
           label="Agregar Estudiante"
           icon="pi pi-plus"
           className="p-button-success"
-          onClick={() => navigate("/students/register")}
+          onClick={() => navigate("/estudiantes/crear")}
           style={{
             borderRadius: "8px",
             height: "40px",
