@@ -169,7 +169,27 @@ const StudentList = () => {
       }}
     >
       <Toast ref={toast} />
-      <h2 style={{ marginBottom: "1rem" }}>Lista de Estudiantes</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1rem",
+        }}
+      >
+        <h2 style={{ marginBottom: "0" }}>Lista de Estudiantes</h2>
+        <Button
+          label="Agregar Estudiante"
+          icon="pi pi-plus"
+          className="p-button-success"
+          onClick={() => navigate("/students/register")}
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            padding: "0.5rem 1rem",
+          }}
+        />
+      </div>
 
       <div
         style={{
