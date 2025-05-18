@@ -12,3 +12,52 @@ body,
     max-width: 90%;
   }
 }
+
+.auth-card {
+  position: relative;
+  z-index: 1;
+  width: 90%; /* Adaptativo en pantallas pequeñas */
+  max-width: 100vh; /* Máximo ancho en pantallas grandes */
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s;
+}
+
+/* Ajuste para pantallas grandes (1920px o más) */
+@media (min-width: 1600px) {
+  .auth-card {
+    max-width: 600px;
+  }
+}
+
+/* Ajuste para pantallas medianas (hasta 1366px) */
+@media (max-width: 1366px) {
+  .auth-card {
+    max-width: 480px;
+  }
+}
+
+/* Ajuste para pantallas pequeñas (hasta 1024px) */
+@media (max-width: 1024px) {
+  .auth-card {
+    max-width: 400px;
+    padding: 1.5rem;
+  }
+}
+
+/* Ajuste para pantallas muy pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+  .auth-card {
+    max-width: 350px;
+    padding: 1.5rem;
+  }
+}
+
+/* Ajuste para pantallas móviles (hasta 480px) */
+@media (max-width: 480px) {
+  .auth-card {
+    max-width: 90%;
+    padding: 1rem;
+  }
+}

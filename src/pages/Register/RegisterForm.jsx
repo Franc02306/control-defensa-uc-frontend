@@ -189,10 +189,10 @@ const RegisterForm = () => {
     <div className="register-container">
       <Toast ref={toast} />
 
-      <Card title="Crear una cuenta" className="register-card">
+      <Card title="Crear una cuenta" className="auth-card">
         <div className="p-fluid">
           <div className="field">
-            <label htmlFor="firstName">Nombre</label>
+            <label htmlFor="firstName">Nombres</label>
             <InputText
               id="firstName"
               value={formData.firstName}
@@ -208,7 +208,7 @@ const RegisterForm = () => {
           </div>
 
           <div className="field">
-            <label htmlFor="lastName">Apellido</label>
+            <label htmlFor="lastName">Apellidos</label>
             <InputText
               id="lastName"
               value={formData.lastName}

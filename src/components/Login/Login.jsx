@@ -61,7 +61,7 @@ const Login = () => {
     <div className="login-container">
       <Toast ref={toast} />
 
-      <Card className="login-card">
+      <Card className="auth-card">
         {/* Contenedor del ícono */}
         <div className="login-icon">
           <img src="/src/assets/Icon/logo-uc.ico" alt="Login UC" />
@@ -97,7 +97,8 @@ const Login = () => {
           />
 
           <div className="register-link">
-            ¿Eres nuevo por aquí? Puedes <a href="/registro-de-usuario">registrarte aquí</a>
+            ¿Eres nuevo por aquí? Puedes{" "}
+            <a href="/registro-de-usuario">registrarte aquí</a>
           </div>
         </form>
       </Card>

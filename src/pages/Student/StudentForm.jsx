@@ -177,33 +177,47 @@ const StudentForm = () => {
     <div className="card">
       <Toast ref={toast} />
       <h2>{id ? "Editar Estudiante" : "Registrar Estudiante"}</h2>
-      <div style={{ display: "grid", gap: "1rem" }}>
-        <InputText
-          placeholder="Nombres"
-          value={formData.firstName}
-          onChange={(e) => handleChange(e, "firstName")}
-        />
-        <InputText
-          placeholder="Apellidos"
-          value={formData.lastName}
-          onChange={(e) => handleChange(e, "lastName")}
-        />
-        <Dropdown
-          value={formData.gender}
-          options={genders}
-          onChange={(e) => handleChange(e, "gender")}
-          placeholder="Género"
-        />
-        <Calendar
-          value={formData.birthDate}
-          onChange={(e) => handleChange(e, "birthDate")}
-          placeholder="Fecha de Nacimiento"
-        />
-        <InputText
-          placeholder="Carrera"
-          value={formData.major}
-          onChange={(e) => handleChange(e, "major")}
-        />
+      <div className="p-fluid">
+        <div className="field">
+          <label htmlFor="firstName">Nombres</label>
+          <InputText
+            value={formData.firstName}
+            onChange={(e) => handleChange(e, "firstName")}
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="lastName">Apellidos</label>
+          <InputText
+            value={formData.lastName}
+            onChange={(e) => handleChange(e, "lastName")}
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="gender">Género</label>
+          <Dropdown
+            value={formData.gender}
+            options={genders}
+            onChange={(e) => handleChange(e, "gender")}
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="birthDate">Fecha de Nacimiento</label>
+          <Calendar
+            value={formData.birthDate}
+            onChange={(e) => handleChange(e, "birthDate")}
+          />
+        </div>
+
+        <div className="field">
+          <label htmlFor="major">Carrera</label>
+          <InputText
+            value={formData.major}
+            onChange={(e) => handleChange(e, "major")}
+          />
+        </div>
 
         {/* Dropdown Provincia y Municipio */}
         <div style={{ display: "flex", gap: "1rem" }}>
@@ -211,7 +225,7 @@ const StudentForm = () => {
             value={formData.address.idProvince}
             options={provinces}
             onChange={handleProvinceChange}
-            placeholder="Provincia"
+            placeholder="Seleccione una Provincia"
             style={{ flex: 1 }}
           />
           <Dropdown
@@ -223,7 +237,7 @@ const StudentForm = () => {
                 address: { ...formData.address, idMunicipality: e.value },
               })
             }
-            placeholder="Municipio"
+            placeholder="Seleccione un Municipio"
             disabled={!formData.address.idProvince}
             style={{ flex: 1 }}
           />
