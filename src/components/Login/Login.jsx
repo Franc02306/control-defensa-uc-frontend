@@ -97,7 +97,7 @@ const Login = () => {
           />
 
           <div className="register-link">
-            ¿Eres nuevo? <a href="/registro-de-usuario">Regístrate aquí</a>
+            ¿Eres nuevo por aquí? Puedes <a href="/registro-de-usuario">registrarte aquí</a>
           </div>
         </form>
       </Card>

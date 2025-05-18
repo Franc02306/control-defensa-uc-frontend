@@ -18,11 +18,49 @@ const RegisterForm = () => {
     confirmPassword: "",
   });
 
+  const [nameError, setNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [usernameError, setUsernameError] = useState("");
   const toast = useRef(null);
   const navigate = useNavigate();
 
   const handleChange = (e, field) => {
-    setFormData({ ...formData, [field]: e.target.value });
+    let value = e.target.value;
+
+    if (field === "firstName") {
+      const invalidChars = /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/;
+      if (invalidChars.test(value)) {
+        setNameError("El nombre solo debe contener letras.");
+      } else {
+        setNameError("");
+      }
+    }
+
+    if (field === "lastName") {
+      const invalidChars = /[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/;
+      if (invalidChars.test(value)) {
+        setLastNameError("El apellido solo debe contener letras.");
+      } else {
+        setLastNameError("");
+      }
+    }
+
+    if (field === "username") {
+      const invalidChars = /[^a-zA-Z0-9._]/;
+      if (/\s/.test(value)) {
+        setUsernameError("El nombre de usuario no puede contener espacios.");
+      } else if (invalidChars.test(value)) {
+        setUsernameError(
+          "El nombre de usuario solo permite letras, números, puntos y guiones bajos."
+        );
+      } else if (value.length > 20) {
+        setUsernameError("El nombre de usuario no debe exceder 20 caracteres.");
+      } else {
+        setUsernameError("");
+      }
+    }
+
+    setFormData({ ...formData, [field]: value });
   };
 
   const passwordRules = {
@@ -165,6 +203,7 @@ const RegisterForm = () => {
                 Máximo 100 carácteres permitidos
               </small>
             )}
+            {nameError && <small className="p-error">{nameError}</small>}
           </div>
 
           <div className="field">
@@ -180,6 +219,9 @@ const RegisterForm = () => {
                 Máximo 100 carácteres permitidos
               </small>
             )}
+            {lastNameError && (
+              <small className="p-error">{lastNameError}</small>
+            )}
           </div>
 
           <div className="field">
@@ -194,6 +236,9 @@ const RegisterForm = () => {
               <small className="p-error">
                 Máximo 50 caracteres permitidos.
               </small>
+            )}
+            {usernameError && (
+              <small className="p-error">{usernameError}</small>
             )}
           </div>
 
