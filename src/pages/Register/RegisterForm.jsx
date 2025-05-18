@@ -9,6 +9,8 @@ import { registerUser } from "../../services/userService";
 import "./RegisterForm.css";
 
 const RegisterForm = () => {
+  const toast = useRef(null);
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -18,11 +20,10 @@ const RegisterForm = () => {
     confirmPassword: "",
   });
 
+  // Errores específicos de cada campo
   const [nameError, setNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [usernameError, setUsernameError] = useState("");
-  const toast = useRef(null);
-  const navigate = useNavigate();
 
   const handleChange = (e, field) => {
     let value = e.target.value;
@@ -188,7 +189,7 @@ const RegisterForm = () => {
     <div className="register-container">
       <Toast ref={toast} />
 
-      <Card title="Crear una cuenta" className="login-card">
+      <Card title="Crear una cuenta" className="register-card">
         <div className="p-fluid">
           <div className="field">
             <label htmlFor="firstName">Nombre</label>
@@ -383,7 +384,8 @@ const RegisterForm = () => {
             className="register-link"
             style={{ marginTop: "1rem", textAlign: "center" }}
           >
-            ¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a>
+            ¿Ya tienes una cuenta? Puedes iniciar sesión{" "}
+            <a href="/login">aquí</a>
           </div>
         </div>
       </Card>

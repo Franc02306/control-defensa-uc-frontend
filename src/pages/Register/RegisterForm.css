@@ -29,13 +29,31 @@
 
 /* Estilo principal del contenedor */
 .register-container {
+  position: relative;
   display: flex;
   justify-content: center;
-  padding-top: 3rem;
-  padding-bottom: 3rem;
+  align-items: center;
+  min-height: 100vh;
   background-color: #e6f0ff;
-  min-height: 100dvh;
+  padding: 1rem;
   box-sizing: border-box;
+  overflow: hidden;
+}
+
+/* Fondo de imagen dinámico */
+.register-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/src/assets/Icon/background-login.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5; /* Controla la transparencia */
+  filter: brightness(0.8); /* Ajusta el brillo para mejor visibilidad */
 }
 
 /* Card adaptativo que no deja espacio feo en pantallas grandes */
@@ -48,4 +66,54 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.05);
   margin-top: auto;
   margin-bottom: auto;
+}
+
+/* Card del formulario */
+.register-card {
+  position: relative;
+  z-index: 1;
+  width: 90%; /* Adaptativo en pantallas pequeñas */
+  max-width: 100vh; /* Máximo ancho en pantallas grandes */
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s;
+}
+
+/* Ajuste para pantallas grandes (1920px o más) */
+@media (min-width: 1600px) {
+  .register-card {
+    max-width: 600px; /* Mayor tamaño en pantallas grandes */
+  }
+}
+
+/* Ajuste para pantallas medianas (hasta 1366px) */
+@media (max-width: 1366px) {
+  .register-card {
+    max-width: 480px;
+  }
+}
+
+/* Ajuste para pantallas pequeñas (hasta 1024px) */
+@media (max-width: 1024px) {
+  .register-card {
+    max-width: 400px;
+    padding: 1.5rem;
+  }
+}
+
+/* Ajuste para pantallas muy pequeñas (hasta 768px) */
+@media (max-width: 768px) {
+  .register-card {
+    max-width: 350px;
+    padding: 1.5rem;
+  }
+}
+
+/* Ajuste para pantallas móviles (hasta 480px) */
+@media (max-width: 480px) {
+  .register-card {
+    max-width: 90%;
+    padding: 1rem;
+  }
 }
