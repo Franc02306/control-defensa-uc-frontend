@@ -60,7 +60,14 @@ const Login = () => {
   return (
     <div className="login-container">
       <Toast ref={toast} />
-      <Card title="Iniciar Sesión" className="login-card">
+
+      <Card className="login-card">
+        {/* Contenedor del ícono */}
+        <div className="login-icon">
+          <img src="/src/assets/Icon/logo-uc.ico" alt="Login UC" />
+        </div>
+
+        <h2 className="login-title">Iniciar Sesión</h2>
         <form className="p-fluid" onSubmit={handleLogin}>
           <div className="field">
             <label htmlFor="username">Usuario</label>

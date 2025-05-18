@@ -46,13 +46,14 @@ const StudentForm = () => {
 
   const fetchStudent = async (studentId) => {
     try {
-      const res = await getStudentById(studentId);
-      setFormData(res.data.data);
+      const response = await getStudentById(studentId);
+      setFormData(response.data.data);
     } catch (error) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: error.res?.data?.message || "No se pudo cargar el estudiante",
+        detail:
+          error.response?.data?.message || "No se pudo cargar el estudiante",
         life: 4000,
       });
     }
@@ -65,15 +66,19 @@ const StudentForm = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const res = await getProvinces();
-        const mapped = res.data.map((p) => ({ label: p.name, value: p.id }));
+        const response = await getProvinces();
+        const mapped = response.data.map((p) => ({
+          label: p.name,
+          value: p.id,
+        }));
         setProvinces(mapped);
       } catch (error) {
         toast.current?.show({
           severity: "error",
           summary: "Error",
           detail:
-            error.res?.data?.message || "No se pudieron cargar las provincias",
+            error.response?.data?.message ||
+            "No se pudieron cargar las provincias",
           life: 4000,
         });
       }
@@ -98,8 +103,8 @@ const StudentForm = () => {
     }
 
     try {
-      const res = await getMunicipalitiesByProvince(selectedProvince);
-      const mapped = res.data.map((m) => ({ label: m.name, value: m.id }));
+      const response = await getMunicipalitiesByProvince(selectedProvince);
+      const mapped = response.data.map((m) => ({ label: m.name, value: m.id }));
       setMunicipalities(mapped);
     } catch (error) {
       toast.current?.show({
@@ -114,7 +119,18 @@ const StudentForm = () => {
   };
 
   const handleChange = (e, field) => {
-    setFormData({ ...formData, [field]: e.target.value });
+    if (field.startsWith("address.")) {
+      const addressField = field.split(".")[1];
+      setFormData({
+        ...formData,
+        address: {
+          ...formData.address,
+          [addressField]: e.target.value,
+        },
+      });
+    } else {
+      setFormData({ ...formData, [field]: e.target.value });
+    }
   };
 
   const handleSubmit = async () => {
@@ -148,7 +164,8 @@ const StudentForm = () => {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: error.res?.data?.message || "No se pudo guardar el estudiante",
+        detail:
+          error.response?.data?.message || "No se pudo guardar el estudiante",
         life: 4000,
       });
     } finally {
@@ -188,6 +205,30 @@ const StudentForm = () => {
           onChange={(e) => handleChange(e, "major")}
         />
 
+        {/* Dropdown Provincia y Municipio */}
+        <div style={{ display: "flex", gap: "1rem" }}>
+          <Dropdown
+            value={formData.address.idProvince}
+            options={provinces}
+            onChange={handleProvinceChange}
+            placeholder="Provincia"
+            style={{ flex: 1 }}
+          />
+          <Dropdown
+            value={formData.address.idMunicipality}
+            options={municipalities}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                address: { ...formData.address, idMunicipality: e.value },
+              })
+            }
+            placeholder="Municipio"
+            disabled={!formData.address.idProvince}
+            style={{ flex: 1 }}
+          />
+        </div>
+
         {/* Dirección (Calle y Número) */}
         <div style={{ display: "flex", gap: "1rem" }}>
           <InputText
@@ -203,26 +244,6 @@ const StudentForm = () => {
             style={{ flex: 1 }}
           />
         </div>
-
-        {/* Dropdown Provincia y Municipio */}
-        <Dropdown
-          value={formData.address.idProvince}
-          options={provinces}
-          onChange={handleProvinceChange}
-          placeholder="Provincia"
-        />
-        <Dropdown
-          value={formData.address.idMunicipality}
-          options={municipalities}
-          onChange={(e) =>
-            setFormData({
-              ...formData,
-              address: { ...formData.address, idMunicipality: e.value },
-            })
-          }
-          placeholder="Municipio"
-          disabled={!formData.address.idProvince}
-        />
 
         {/* Botones alineados y centrados */}
         <div

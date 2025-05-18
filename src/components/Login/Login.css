@@ -1,20 +1,52 @@
 .login-container {
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-color: #e6f0ff; /* fondo azul académico */
-  padding: 1rem; /* para que en móviles no se pegue a los bordes */
-  box-sizing: border-box; /* que respete el padding */
+  background-color: #e6f0ff;
+  padding: 1rem;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+
+.login-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/src/assets/Icon/background-login.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5; /* Controla la transparencia aquí */
+  filter: brightness(0.8); /* Ajusta el brillo para mejor visibilidad */
 }
 
 .login-card {
+  position: relative; /* Asegura que esté encima del fondo */
+  z-index: 1;
   width: 100%;
-  max-width: 400px; /* límite de ancho */
+  max-width: 300px;
   padding: 2.5rem;
   border-radius: 15px;
   box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
-  background: #fff; /* asegurar que sea blanco */
+  background: #fff;
+}
+
+.login-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem; /* Espacio entre el logo y el título */
+}
+
+.login-icon img {
+  width: 200px; /* Ajusta el tamaño que prefieras */
+  height: auto;
+  object-fit: contain;
 }
 
 .register-link {

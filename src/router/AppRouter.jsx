@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "../components/Login/Login";
-import Register from "../pages/Register/Register";
+import RegisterForm from "../pages/Register/RegisterForm";
 import Home from "../pages/Home/Home";
 import StudentList from "../pages/Student/StudentList";
 import StudentForm from "../pages/Student/StudentForm";
@@ -16,7 +16,7 @@ const AppRouter = () => {
         {!token ? (
           <>
             <Route path="/login" element={<Login />} />
-            <Route path="/registro-de-usuario" element={<Register />} />
+            <Route path="/registro-de-usuario" element={<RegisterForm />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (

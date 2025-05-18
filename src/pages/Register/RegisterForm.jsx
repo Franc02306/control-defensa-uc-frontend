@@ -6,9 +6,9 @@ import { Card } from "primereact/card";
 import { Toast } from "primereact/toast";
 import { useNavigate } from "react-router-dom";
 import { registerUser } from "../../services/userService";
-import "./Register.css";
+import "./RegisterForm.css";
 
-const Register = () => {
+const RegisterForm = () => {
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -346,4 +346,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default RegisterForm;
