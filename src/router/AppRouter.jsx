@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import ApprovalResult from "../pages/Approval/ApprovalResult";
 import Login from "../components/Login/Login";
 import RegisterForm from "../pages/Register/RegisterForm";
 import Home from "../pages/Home/Home";
@@ -17,6 +18,7 @@ const AppRouter = () => {
           <>
             <Route path="/login" element={<Login />} />
             <Route path="/registro-de-usuario" element={<RegisterForm />} />
+            <Route path="/aprobacion-resultado" element={<ApprovalResult />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>
         ) : (

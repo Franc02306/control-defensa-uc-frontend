@@ -18,12 +18,14 @@ const RegisterForm = () => {
     email: "",
     password: "",
     confirmPassword: "",
+    idRole: 2,
   });
 
   // Errores específicos de cada campo
   const [nameError, setNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [usernameError, setUsernameError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e, field) => {
     let value = e.target.value;
@@ -75,8 +77,10 @@ const RegisterForm = () => {
   const handleSubmit = async () => {
     if (!validateForm()) return;
 
+    setLoading(true);
+
     try {
-      const response = await registerUser({ ...formData, status: true });
+      const response = await registerUser({ ...formData, status: false });
 
       const { firstName, lastName } = response.data.data;
 
@@ -98,6 +102,8 @@ const RegisterForm = () => {
           error.response?.data?.message || "No se pudo registrar el usuario.",
         life: 4000,
       });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -124,7 +130,7 @@ const RegisterForm = () => {
       toast.current.show({
         severity: "warn",
         summary: "Alerta",
-        detail: "Nombre solo deben contener letras.",
+        detail: "Nombres solo deben contener letras.",
         life: 4000,
       });
       return false;
@@ -134,7 +140,7 @@ const RegisterForm = () => {
       toast.current.show({
         severity: "warn",
         summary: "Alerta",
-        detail: "Apellido solo deben contener letras.",
+        detail: "Apellidos solo deben contener letras.",
         life: 4000,
       });
       return false;
@@ -190,7 +196,13 @@ const RegisterForm = () => {
       <Toast ref={toast} />
 
       <Card title="Crear una cuenta" className="auth-card">
-        <div className="p-fluid">
+        <form
+          className="p-fluid"
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleSubmit();
+          }}
+        >
           <div className="field">
             <label htmlFor="firstName">Nombres</label>
             <InputText
@@ -375,9 +387,11 @@ const RegisterForm = () => {
 
           <Button
             label="Registrarse"
-            icon="pi pi-user-plus"
+            icon={loading ? "pi pi-spin pi-spinner" : "pi pi-user-plus"}
+            type="submit"
             onClick={handleSubmit}
             className="p-mt-3"
+            disabled={loading}
           />
 
           <div
@@ -387,7 +401,7 @@ const RegisterForm = () => {
             ¿Ya tienes una cuenta? Puedes iniciar sesión{" "}
             <a href="/login">aquí</a>
           </div>
-        </div>
+        </form>
       </Card>
     </div>
   );

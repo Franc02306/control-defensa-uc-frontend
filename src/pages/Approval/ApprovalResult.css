@@ -1,0 +1,97 @@
+/* Contenedor principal centrado, fondo gris claro */
+.approval-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f7f9fc;
+  box-sizing: border-box;
+  padding: 2rem 0;
+}
+
+/* Fondo de imagen dinámico */
+.approval-container::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("/src/assets/Icon/background-login.jpg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0.5; /* Controla la transparencia */
+  filter: brightness(0.8); /* Ajusta el brillo para mejor visibilidad */
+}
+
+/* Card centrada con sombra suave */
+.approval-card {
+  position: relative;
+  z-index: 1;
+  width: 90%; /* Adaptativo en pantallas pequeñas */
+  max-width: 100vh; /* Máximo ancho en pantallas grandes */
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+  transition: width 0.3s;
+	text-align: center;
+}
+
+/* Icono de error o éxito */
+.approval-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.approval-error {
+  color: #e53935;
+}
+
+.approval-success {
+  color: #43a047;
+}
+
+/* Título */
+.approval-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #e53935;
+}
+
+.approval-success-title {
+  color: #43a047;
+}
+
+/* Mensaje */
+.approval-message {
+  font-size: 1.15rem;
+  color: #e53935;
+  margin-bottom: 2rem;
+}
+
+.approval-success-message {
+  color: #43a047;
+}
+
+/* Botón volver */
+.approval-btn {
+  width: 100%;
+  font-weight: bold;
+  border-radius: 8px;
+  font-size: 1.05rem;
+  background: #687087;
+  border: none;
+  color: #fff;
+  padding: 0.75rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.approval-btn:hover {
+  background: #4b5268;
+  color: #fff;
+}
