@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ApprovalResult from "../pages/Approval/ApprovalResult";
 import Login from "../components/Login/Login";
 import RegisterForm from "../pages/Register/RegisterForm";
+import RegisterSuccess from "../pages/Register/RegisterSuccess";
 import Home from "../pages/Home/Home";
 import StudentList from "../pages/Student/StudentList";
 import StudentForm from "../pages/Student/StudentForm";
@@ -18,6 +19,7 @@ const AppRouter = () => {
           <>
             <Route path="/login" element={<Login />} />
             <Route path="/registro-de-usuario" element={<RegisterForm />} />
+            <Route path="/register-de-usuario-completado" element={<RegisterSuccess />} />
             <Route path="/aprobacion-resultado" element={<ApprovalResult />} />
             <Route path="*" element={<Navigate to="/login" replace />} />
           </>

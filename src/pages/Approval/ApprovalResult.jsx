@@ -141,17 +141,18 @@ const ApprovalResult = () => {
             <div className={messageClass} style={{ fontWeight: "500" }}>
               {result.message}
             </div>
-            {result.success && action === "approve" && (
-              <Button
-                label="Ir a Iniciar Sesión"
-                icon="pi pi-sign-in"
-                className="approval-btn"
-                onClick={() => navigate("/login")}
-              />
-            )}
+            {result.success &&
+              (action === "approve" || action === "reject") && (
+                <Button
+                  label="Ir al Sistema Web"
+                  icon="pi pi-sign-in"
+                  className="approval-btn"
+                  onClick={() => navigate("/login")}
+                />
+              )}
             {!result.success && (
               <Button
-                label="Ir a Iniciar Sesión"
+                label="Ir al Sistema Web"
                 icon="pi pi-home"
                 className="approval-btn"
                 onClick={() => navigate("/")}

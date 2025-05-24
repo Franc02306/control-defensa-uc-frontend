@@ -80,20 +80,9 @@ const RegisterForm = () => {
     setLoading(true);
 
     try {
-      const response = await registerUser({ ...formData, status: false });
+      await registerUser({ ...formData, status: false });
 
-      const { firstName, lastName } = response.data.data;
-
-      toast.current.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: `Bienvenido, ${firstName} ${lastName}.`,
-        life: 2500,
-      });
-
-      setTimeout(() => {
-        navigate("/login");
-      }, 2000);
+      navigate("/register-de-usuario-completado");
     } catch (error) {
       toast.current.show({
         severity: "error",
@@ -210,6 +199,7 @@ const RegisterForm = () => {
               value={formData.firstName}
               onChange={(e) => handleChange(e, "firstName")}
               maxLength={100}
+              disabled={loading}
             />
             {formData.firstName.length >= 100 && (
               <small className="p-error">
@@ -226,6 +216,7 @@ const RegisterForm = () => {
               value={formData.lastName}
               onChange={(e) => handleChange(e, "lastName")}
               maxLength={100}
+              disabled={loading}
             />
             {formData.lastName.length >= 100 && (
               <small className="p-error">
@@ -244,6 +235,7 @@ const RegisterForm = () => {
               value={formData.username}
               onChange={(e) => handleChange(e, "username")}
               maxLength={50}
+              disabled={loading}
             />
             {formData.username.length >= 50 && (
               <small className="p-error">
@@ -262,6 +254,7 @@ const RegisterForm = () => {
               value={formData.email}
               onChange={(e) => handleChange(e, "email")}
               maxLength={100}
+              disabled={loading}
             />
             {formData.email.length >= 100 && (
               <small className="p-error">
@@ -288,6 +281,7 @@ const RegisterForm = () => {
                   life: 3000,
                 });
               }}
+              disabled={loading}
             />
 
             {formData.password.length >= 100 && (
@@ -315,6 +309,7 @@ const RegisterForm = () => {
                   life: 3000,
                 });
               }}
+              disabled={loading}
             />
             {formData.confirmPassword.length >= 100 && (
               <small className="p-error">
