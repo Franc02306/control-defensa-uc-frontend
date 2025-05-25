@@ -60,7 +60,7 @@ const StudentList = () => {
         icon: "error",
         title: "Error",
         text:
-          error.response?.data?.message || "Could not calculate average age.",
+          error.response?.data?.message || "No se pudo obtener el promedio de edades.",
       });
     } finally {
       setCalculatingAvg(false);

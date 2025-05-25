@@ -5,6 +5,7 @@ import {
   updateStudent,
   getStudentById,
 } from "../../services/studentService";
+import { getMajors } from "../../services/complementService";
 import {
   getProvinces,
   getMunicipalitiesByProvince,
@@ -40,6 +41,7 @@ const StudentForm = () => {
   const [lastNameError, setLastNameError] = useState("");
   const [streetError, setStreetError] = useState("");
 
+  const [majors, setMajors] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [municipalities, setMunicipalities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -90,6 +92,29 @@ const StudentForm = () => {
       }
     };
     fetchProvinces();
+  }, []);
+
+  useEffect(() => {
+    const fetchMajors = async () => {
+      try {
+        const response = await getMajors();
+        const mapped = response.data.data.map((m) => ({
+          label: m.name, // Lo que verá el usuario
+          value: m.name, // Guardamos el nombre, no el id, para cumplir el requerimiento
+        }));
+        setMajors(mapped);
+      } catch (error) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail:
+            error.response?.data?.message ||
+            "No se pudieron cargar las carreras.",
+          life: 4000,
+        });
+      }
+    };
+    fetchMajors();
   }, []);
 
   const handleProvinceChange = async (e) => {
@@ -322,12 +347,13 @@ const StudentForm = () => {
           />
         </div>
 
-        {/* ESTE CAMPO RECIBIRA DATA DE UNA API DE CARRERAS */}
         <div className="field">
           <label htmlFor="major">Carrera</label>
-          <InputText
+          <Dropdown
             value={formData.major}
+            options={majors}
             onChange={(e) => handleChange(e, "major")}
+            placeholder="Seleccione una carrera"
           />
         </div>
 

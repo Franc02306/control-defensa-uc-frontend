@@ -71,7 +71,7 @@ const SidebarMenu = () => {
       label: "Profesores",
       icon: "pi pi-briefcase",
       command: () => {
-        window.location.href = "/settings";
+        window.location.href = "/profesores";
       },
     },
   ];
