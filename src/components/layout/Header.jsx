@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
 import { useEffect, useState } from "react";
+import { Button } from "primereact/button";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -56,32 +57,34 @@ const Header = () => {
   return (
     <header style={headerStyle}>
       {/* Botón menú hamburguesa */}
-      <button
-        onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
+      <Button
+        icon="pi pi-bars"
+        className="p-button-rounded p-button-text"
         style={{
-          backgroundColor: "transparent",
-          border: "none",
           color: "white",
           fontSize: "1.5rem",
+          background: "transparent",
           marginRight: "1rem",
-          cursor: "pointer",
         }}
-      >
-        <i className="pi pi-bars"></i>
-      </button>
+        onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
+        aria-label="Abrir menú"
+        tooltip="Abrir menú" // Si usas PrimeReact Tooltip
+      />
       <h1 style={{ margin: 0 }}>Defensa UC</h1>
-      <button
-        onClick={handleLogout}
+      <Button
+        label="Cerrar Sesión"
+        icon="pi pi-sign-out"
+        className="p-button-rounded p-button-text"
         style={{
           backgroundColor: "white",
           color: "#004080",
           border: "none",
           padding: "0.5rem 1rem",
           borderRadius: "5px",
+          fontWeight: "bold",
         }}
-      >
-        Cerrar Sesión
-      </button>
+        onClick={handleLogout}
+      />
     </header>
   );
 };
