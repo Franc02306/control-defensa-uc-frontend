@@ -14,6 +14,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import "./StudentForm.css";
 
 const StudentForm = () => {
   const { id } = useParams();
@@ -315,6 +316,9 @@ const StudentForm = () => {
           <Calendar
             value={formData.birthDate}
             onChange={(e) => handleChange(e, "birthDate")}
+            showIcon
+            dateFormat="dd/mm/yy"
+            placeholder="Selecciona la fecha"
           />
         </div>
 

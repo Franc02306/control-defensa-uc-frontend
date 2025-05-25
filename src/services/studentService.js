@@ -21,6 +21,15 @@ export const searchStudents = (name, year, province) => {
   });
 };
 
+export const getAverageAge = (year, province) => {
+  return API.get("/student/average-age", {
+    params: {
+      year,
+      province,
+    },
+  });
+};
+
 export const getStudentById = (id) => {
   return API.get(`/student/${id}`);
 };

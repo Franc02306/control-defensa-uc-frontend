@@ -1,5 +1,9 @@
 import React, { useEffect, useState, useRef } from "react";
-import { searchStudents, deleteStudent } from "../../services/studentService";
+import {
+  searchStudents,
+  deleteStudent,
+  getAverageAge,
+} from "../../services/studentService";
 import { getProvinces } from "../../services/locationService";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
@@ -8,6 +12,7 @@ import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -16,6 +21,10 @@ const StudentList = () => {
   const [provinces, setProvinces] = useState([]);
   const [searchProvince, setSearchProvince] = useState(null);
   const [loading, setLoading] = useState(false);
+
+  // Calcular el promedio de edad de estudiantes
+  const [calculatingAvg, setCalculatingAvg] = useState(false);
+
   const toast = useRef(null);
   const navigate = useNavigate();
 
@@ -27,6 +36,36 @@ const StudentList = () => {
     { label: "5", value: 5 },
     { label: "6", value: 6 },
   ];
+
+  const handleAverageAge = async () => {
+    if (!searchYear || !searchProvince) {
+      Swal.fire({
+        icon: "warning",
+        title: "Parámetros Faltantes",
+        text: "Escoja un año y provincia.",
+      });
+      return;
+    }
+    setCalculatingAvg(true);
+    try {
+      const res = await getAverageAge(searchYear, searchProvince);
+      const avg = res.data.data;
+      Swal.fire({
+        icon: "info",
+        title: "Información",
+        html: `Se calculó el promedio de edades en la provincia: <b>${searchProvince}</b> <br/>Promedio: <b>${avg}</b>`,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          error.response?.data?.message || "Could not calculate average age.",
+      });
+    } finally {
+      setCalculatingAvg(false);
+    }
+  };
 
   const fetchStudents = async (name, year, province) => {
     setLoading(true);
@@ -178,17 +217,32 @@ const StudentList = () => {
         }}
       >
         <h2 style={{ marginBottom: "0" }}>Lista de Estudiantes</h2>
-        <Button
-          label="Agregar Estudiante"
-          icon="pi pi-plus"
-          className="p-button-success"
-          onClick={() => navigate("/estudiantes/crear")}
-          style={{
-            borderRadius: "8px",
-            height: "40px",
-            padding: "0.5rem 1rem",
-          }}
-        />
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          <Button
+            label="Agregar Estudiante"
+            icon="pi pi-plus"
+            className="p-button-success"
+            onClick={() => navigate("/estudiantes/crear")}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1rem",
+            }}
+          />
+          <Button
+            label="Promedio Edad"
+            icon="pi pi-chart-line"
+            className="p-button-help"
+            onClick={handleAverageAge}
+            disabled={!searchProvince || !searchYear || calculatingAvg}
+            loading={calculatingAvg}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1rem",
+            }}
+          />
+        </div>
       </div>
 
       <div
