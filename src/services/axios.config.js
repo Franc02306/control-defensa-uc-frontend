@@ -34,7 +34,7 @@ API.interceptors.response.use(
       Swal.fire({
         icon: "warning",
         title: "Sesión expirada",
-        text: "Tu sesión ha expirado. Serás redirigido al login.",
+        text: "Su sesión ha expirado. Será redirigido al login.",
         timer: 5000,
         timerProgressBar: true,
         showConfirmButton: true,

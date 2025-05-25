@@ -34,6 +34,12 @@ const StudentForm = () => {
     },
   });
 
+  // Errores específicos de cada campo
+  const [nameError, setNameError] = useState("");
+  const [lastNameError, setLastNameError] = useState("");
+  const [streetError, setStreetError] = useState("");
+  const [numberError, setNumberError] = useState("");
+
   const [provinces, setProvinces] = useState([]);
   const [municipalities, setMunicipalities] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -119,17 +125,45 @@ const StudentForm = () => {
   };
 
   const handleChange = (e, field) => {
-    if (field.startsWith("address.")) {
+    let value = e.target.value;
+
+    if (field === "firstName") {
+      if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(value)) {
+        setNameError("El nombre solo debe contener letras.");
+      } else {
+        setNameError("");
+      }
+      setFormData({ ...formData, firstName: value });
+    } else if (field === "lastName") {
+      if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/.test(value)) {
+        setLastNameError("El apellido solo debe contener letras.");
+      } else {
+        setLastNameError("");
+      }
+      setFormData({ ...formData, lastName: value });
+    } else if (field === "address.street") {
+      if (value.length > 150)
+        setStreetError("Máximo 150 caracteres permitidos.");
+      else setStreetError("");
+      setFormData({
+        ...formData,
+        address: { ...formData.address, street: value },
+      });
+    } else if (field === "address.number") {
+      if (/[^0-9]/.test(value)) setNumberError("Solo números permitidos.");
+      else setNumberError("");
+      setFormData({
+        ...formData,
+        address: { ...formData.address, number: value },
+      });
+    } else if (field.startsWith("address.")) {
       const addressField = field.split(".")[1];
       setFormData({
         ...formData,
-        address: {
-          ...formData.address,
-          [addressField]: e.target.value,
-        },
+        address: { ...formData.address, [addressField]: value },
       });
     } else {
-      setFormData({ ...formData, [field]: e.target.value });
+      setFormData({ ...formData, [field]: value });
     }
   };
 
@@ -183,7 +217,12 @@ const StudentForm = () => {
           <InputText
             value={formData.firstName}
             onChange={(e) => handleChange(e, "firstName")}
+            maxLength={100}
           />
+          {formData.firstName.length >= 100 && (
+            <small className="p-error">Máximo 100 carácteres permitidos</small>
+          )}
+          {nameError && <small className="p-error">{nameError}</small>}
         </div>
 
         <div className="field">
@@ -191,7 +230,12 @@ const StudentForm = () => {
           <InputText
             value={formData.lastName}
             onChange={(e) => handleChange(e, "lastName")}
+            maxLength={100}
           />
+          {formData.lastName.length >= 100 && (
+            <small className="p-error">Máximo 100 carácteres permitidos</small>
+          )}
+          {lastNameError && <small className="p-error">{lastNameError}</small>}
         </div>
 
         <div className="field">
@@ -211,6 +255,7 @@ const StudentForm = () => {
           />
         </div>
 
+        {/* ESTE CAMPO RECIBIRA DATA DE UNA API DE CARRERAS */}
         <div className="field">
           <label htmlFor="major">Carrera</label>
           <InputText
@@ -220,43 +265,63 @@ const StudentForm = () => {
         </div>
 
         {/* Dropdown Provincia y Municipio */}
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <Dropdown
-            value={formData.address.idProvince}
-            options={provinces}
-            onChange={handleProvinceChange}
-            placeholder="Seleccione una Provincia"
-            style={{ flex: 1 }}
-          />
-          <Dropdown
-            value={formData.address.idMunicipality}
-            options={municipalities}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                address: { ...formData.address, idMunicipality: e.value },
-              })
-            }
-            placeholder="Seleccione un Municipio"
-            disabled={!formData.address.idProvince}
-            style={{ flex: 1 }}
-          />
+        <div className="field">
+          <label>Provincia y Municipio</label>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <Dropdown
+              value={formData.address.idProvince}
+              options={provinces}
+              onChange={handleProvinceChange}
+              placeholder="Seleccione una Provincia"
+              style={{ flex: 1 }}
+            />
+            <Dropdown
+              value={formData.address.idMunicipality}
+              options={municipalities}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  address: { ...formData.address, idMunicipality: e.value },
+                })
+              }
+              placeholder="Seleccione un Municipio"
+              disabled={!formData.address.idProvince}
+              style={{ flex: 1 }}
+            />
+          </div>
         </div>
 
         {/* Dirección (Calle y Número) */}
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <InputText
-            placeholder="Calle"
-            value={formData.address.street}
-            onChange={(e) => handleChange(e, "address.street")}
-            style={{ flex: 2 }}
-          />
-          <InputText
-            placeholder="Número"
-            value={formData.address.number}
-            onChange={(e) => handleChange(e, "address.number")}
-            style={{ flex: 1 }}
-          />
+        <div className="field">
+          <label>Calle y Número</label>
+          <div style={{ display: "flex", gap: "1rem" }}>
+            <InputText
+              placeholder="Calle"
+              value={formData.address.street}
+              onChange={(e) => handleChange(e, "address.street")}
+              style={{ flex: 2 }}
+              maxLength={150}
+            />
+            {formData.address.street.length >= 150 && (
+              <small className="p-error">
+                Máximo 150 carácteres permitidos
+              </small>
+            )}
+            {streetError && <small className="p-error">{streetError}</small>}
+            <InputText
+              placeholder="Número"
+              value={formData.address.number}
+              onChange={(e) => handleChange(e, "address.number")}
+              style={{ flex: 1 }}
+              maxLength={10}
+            />
+            {formData.address.number.length >= 10 && (
+              <small className="p-error">
+                Máximo 10 dígitos permitidos
+              </small>
+            )}
+            {numberError && <small className="p-error">{numberError}</small>}
+          </div>
         </div>
 
         {/* Botones alineados y centrados */}

@@ -384,7 +384,6 @@ const RegisterForm = () => {
             label="Registrarse"
             icon={loading ? "pi pi-spin pi-spinner" : "pi pi-user-plus"}
             type="submit"
-            onClick={handleSubmit}
             className="p-mt-3"
             disabled={loading}
           />

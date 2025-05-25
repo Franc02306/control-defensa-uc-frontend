@@ -30,12 +30,15 @@ const Header = () => {
       text: "Usted ha cerrado sesión. Será redirigido al login.",
       timer: 3000,
       timerProgressBar: true,
-      showConfirmButton: false,
+      showConfirmButton: true,
+      confirmButtonText: "Aceptar",
       allowOutsideClick: false,
-      willClose: () => {
+      allowEscapeKey: false,
+    }).then((result) => {
+      if (result.isConfirmed) {
         logout();
         navigate("/login");
-      },
+      }
     });
   };
 
