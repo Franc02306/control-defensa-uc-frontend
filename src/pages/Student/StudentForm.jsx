@@ -38,7 +38,6 @@ const StudentForm = () => {
   const [nameError, setNameError] = useState("");
   const [lastNameError, setLastNameError] = useState("");
   const [streetError, setStreetError] = useState("");
-  const [numberError, setNumberError] = useState("");
 
   const [provinces, setProvinces] = useState([]);
   const [municipalities, setMunicipalities] = useState([]);
@@ -142,19 +141,16 @@ const StudentForm = () => {
       }
       setFormData({ ...formData, lastName: value });
     } else if (field === "address.street") {
-      if (value.length > 150)
+      if (/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s.-]/.test(value)) {
+        setStreetError(
+          "La calle solo permite letras, espacios, puntos y guiones."
+        );
+      } else if (value.length > 150)
         setStreetError("Máximo 150 caracteres permitidos.");
       else setStreetError("");
       setFormData({
         ...formData,
         address: { ...formData.address, street: value },
-      });
-    } else if (field === "address.number") {
-      if (/[^0-9]/.test(value)) setNumberError("Solo números permitidos.");
-      else setNumberError("");
-      setFormData({
-        ...formData,
-        address: { ...formData.address, number: value },
       });
     } else if (field.startsWith("address.")) {
       const addressField = field.split(".")[1];
@@ -167,29 +163,96 @@ const StudentForm = () => {
     }
   };
 
-  const handleSubmit = async () => {
+  const validateForm = () => {
+    const {
+      firstName,
+      lastName,
+      gender,
+      birthDate,
+      major,
+      address: { street, number, idProvince, idMunicipality },
+    } = formData;
+
+    const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+    const streetRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s.-]+$/;
+
+    if (
+      !firstName ||
+      !lastName ||
+      !gender ||
+      !birthDate ||
+      !major ||
+      !street ||
+      !number ||
+      !idProvince ||
+      !idMunicipality
+    ) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Por favor completa todos los campos.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!nameRegex.test(firstName)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Nombres solo debe contener letras.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!nameRegex.test(lastName)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Apellidos solo debe contener letras.",
+        life: 4000,
+      });
+      return false;
+    }
+
+    if (!streetRegex.test(street)) {
+      toast.current.show({
+        severity: "warn",
+        summary: "Alerta",
+        detail: "Calle solo debe contener letras, espacios, puntos y guiones.",
+        life: 4000,
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) return;
+    setLoading(true);
+
+    const finalData = {
+      ...formData,
+      year: 1,
+      teacherAverage: 0,
+    };
+
     try {
-      setLoading(true);
-
-      const finalData = {
-        ...formData,
-        year: 1,
-        teacherAverage: 0,
-      };
-
       if (id) {
         await updateStudent(id, finalData);
         toast.current?.show({
           severity: "success",
           summary: "Actualización",
-          detail: "Estudiante actualizado con éxito",
+          detail: "Estudiante actualizado(a) con éxito",
         });
       } else {
         await createStudent(finalData);
         toast.current?.show({
           severity: "success",
           summary: "Registro",
-          detail: "Estudiante registrado con éxito",
+          detail: "Estudiante registrado(a) con éxito",
         });
       }
 
@@ -295,32 +358,39 @@ const StudentForm = () => {
         <div className="field">
           <label>Calle y Número</label>
           <div style={{ display: "flex", gap: "1rem" }}>
-            <InputText
-              placeholder="Calle"
-              value={formData.address.street}
-              onChange={(e) => handleChange(e, "address.street")}
-              style={{ flex: 2 }}
-              maxLength={150}
-            />
-            {formData.address.street.length >= 150 && (
-              <small className="p-error">
-                Máximo 150 carácteres permitidos
-              </small>
-            )}
-            {streetError && <small className="p-error">{streetError}</small>}
-            <InputText
-              placeholder="Número"
-              value={formData.address.number}
-              onChange={(e) => handleChange(e, "address.number")}
-              style={{ flex: 1 }}
-              maxLength={10}
-            />
-            {formData.address.number.length >= 10 && (
-              <small className="p-error">
-                Máximo 10 dígitos permitidos
-              </small>
-            )}
-            {numberError && <small className="p-error">{numberError}</small>}
+            <div style={{ flex: 2 }}>
+              <InputText
+                placeholder="Calle"
+                value={formData.address.street}
+                onChange={(e) => handleChange(e, "address.street")}
+                style={{ flex: 2 }}
+                maxLength={150}
+              />
+              {formData.address.street.length >= 150 && (
+                <small className="p-error">
+                  Máximo 150 carácteres permitidos
+                </small>
+              )}
+              {streetError && <small className="p-error">{streetError}</small>}
+            </div>
+            <div style={{ flex: 1 }}>
+              <InputText
+                placeholder="Número"
+                value={formData.address.number}
+                onChange={(e) => handleChange(e, "address.number")}
+                onBeforeInput={(e) => {
+                  // Solo permite números (bloquea letras y otros símbolos)
+                  if (!/^[0-9]$/.test(e.data)) {
+                    e.preventDefault();
+                  }
+                }}
+                style={{ flex: 1 }}
+                maxLength={10}
+              />
+              {formData.address.number.length >= 10 && (
+                <small className="p-error">Máximo 10 dígitos permitidos</small>
+              )}
+            </div>
           </div>
         </div>
 

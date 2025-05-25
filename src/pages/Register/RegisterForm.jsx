@@ -100,7 +100,7 @@ const RegisterForm = () => {
     const { firstName, lastName, username, email, password } = formData;
 
     const nameRegex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
-    const usernameRegex = /^[a-zA-Z0-9._]{4,20}$/;
+    const usernameRegex = /^[a-zA-Z0-9._]+$/;
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     const passwordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
