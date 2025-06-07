@@ -8,13 +8,14 @@ import { Card } from "primereact/card";
 import { login } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { useLoading } from "../../context/LoadingContext";
 import "./Login.css";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
   const { login: loginContext } = useAuth();
+  const { showLoading, hideLoading } = useLoading();
   const navigate = useNavigate();
   const toast = useRef(null);
 
@@ -31,7 +32,7 @@ const Login = () => {
       return;
     }
 
-    setLoading(true);
+    showLoading();
 
     try {
       const response = await login({ username, password });
@@ -58,7 +59,7 @@ const Login = () => {
         life: 4000,
       });
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
@@ -80,7 +81,6 @@ const Login = () => {
               id="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              disabled={loading}
             />
           </div>
 
@@ -92,16 +92,14 @@ const Login = () => {
               onChange={(e) => setPassword(e.target.value)}
               toggleMask
               feedback={false}
-              disabled={loading}
             />
           </div>
 
           <Button
             label="Ingresar"
-            icon={loading ? "pi pi-spin pi-spinner" : "pi pi-sign-in"}
+            icon="pi pi-sign-in"
             type="submit"
             className="p-mt-3"
-            disabled={loading}
           />
 
           <div className="register-link">

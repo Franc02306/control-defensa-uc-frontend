@@ -13,6 +13,7 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useLoading } from "../../context/LoadingContext";
 import "./StudentList.css";
 
 const StudentList = () => {
@@ -21,13 +22,14 @@ const StudentList = () => {
   const [searchYear, setSearchYear] = useState(null);
   const [provinces, setProvinces] = useState([]);
   const [searchProvince, setSearchProvince] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   // Calcular el promedio de edad de estudiantes
   const [calculatingAvg, setCalculatingAvg] = useState(false);
 
   const toast = useRef(null);
   const navigate = useNavigate();
+
+  const { showLoading, hideLoading } = useLoading();
 
   const yearOptions = [
     { label: "1", value: 1 },
@@ -70,7 +72,7 @@ const StudentList = () => {
   };
 
   const fetchStudents = async (name, year, province) => {
-    setLoading(true);
+    showLoading();
     try {
       const response = await searchStudents(name, year, province);
       setStudents(response.data.result);
@@ -83,16 +85,18 @@ const StudentList = () => {
         life: 4000,
       });
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
   useEffect(() => {
     fetchStudents("", "", "");
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     const fetchProvinces = async () => {
+      showLoading();
       try {
         const response = await getProvinces();
         const mapped = response.data.map((p) => ({
@@ -108,10 +112,13 @@ const StudentList = () => {
             error.response?.data?.message || "Error al cargar las Provincias.",
           life: 4000,
         });
+      } finally {
+        hideLoading();
       }
     };
 
     fetchProvinces();
+    // eslint-disable-next-line
   }, []);
 
   const handleSearch = () => {
@@ -129,7 +136,7 @@ const StudentList = () => {
     row.gender === "M" ? "Masculino" : "Femenino";
 
   const addressTemplate = (row) =>
-    row.address ? `${row.address.street} ${row.address.number}` : "-";
+    row.address ? `${row.address.province}` : "-";
 
   const actionsTemplate = (row) => {
     return (
@@ -333,9 +340,8 @@ const StudentList = () => {
 
       <DataTable
         value={students}
-        loading={loading}
         paginator
-        rows={10}
+        rows={5}
         style={{
           borderRadius: "12px",
           overflow: "hidden",
@@ -354,14 +360,8 @@ const StudentList = () => {
         <Column header="Género" body={genderTemplate} />
         <Column field="major" header="Carrera" />
         <Column field="year" header="Año" />
-        <Column
-          header="Dirección"
-          body={addressTemplate}
-        />
-        <Column
-          header="Acciones"
-          body={actionsTemplate}
-        />
+        <Column header="Provincia" body={addressTemplate} />
+        <Column header="Acciones" body={actionsTemplate} />
       </DataTable>
     </div>
   );
