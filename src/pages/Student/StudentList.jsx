@@ -13,7 +13,7 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import "./StudentList.css"
+import "./StudentList.css";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -133,7 +133,7 @@ const StudentList = () => {
 
   const actionsTemplate = (row) => {
     return (
-      <div style={{ display: "flex", gap: "0.5rem" }}>
+      <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
         <Button
           icon="pi pi-eye"
           className="p-button-text p-button-plain p-button-sm"
@@ -149,7 +149,7 @@ const StudentList = () => {
           icon="pi pi-pencil"
           className="p-button-text p-button-plain p-button-sm"
           tooltip="Editar"
-          onClick={() => navigate(`/students/edit/${row.id}`)}
+          onClick={() => navigate(`/estudiantes/editar/${row.id}`)}
           style={{
             padding: "0.25rem",
             fontSize: "1rem",
@@ -172,31 +172,37 @@ const StudentList = () => {
   };
 
   const handleDeleteStudent = async (studentId) => {
-    try {
-      const confirm = window.confirm(
-        "¿Estás seguro de eliminar este estudiante?"
-      );
-      if (!confirm) return;
+    const result = await Swal.fire({
+      title: "¿Seguro que quieres eliminar este estudiante?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33", // Rojo para "Sí, eliminar"
+      cancelButtonColor: "#6c757d", // Gris para "Cancelar"
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+    });
 
-      // Aquí llamas a tu API para eliminar el estudiante
-      await deleteStudent(studentId); // Esta es la función que debes implementar en tu servicio
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Estudiante eliminado correctamente.",
-        life: 3000,
-      });
-
-      // Actualiza la lista después de eliminar
-      fetchStudents(searchName, searchYear, searchProvince);
-    } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          error.response?.data?.message || "Error al eliminar el estudiante.",
-        life: 4000,
-      });
+    if (result.isConfirmed) {
+      try {
+        await deleteStudent(studentId);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Estudiante eliminado correctamente.",
+          life: 3000,
+        });
+        fetchStudents(searchName, searchYear, searchProvince);
+      } catch (error) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail:
+            error.response?.data?.message || "Error al eliminar el estudiante.",
+          life: 4000,
+        });
+      }
     }
   };
 
@@ -343,40 +349,18 @@ const StudentList = () => {
           </div>
         }
       >
-        <Column
-          field="firstName"
-          header="Nombres"
-          headerClassName="center-header"
-        />
-        <Column
-          field="lastName"
-          header="Apellidos"
-          headerClassName="center-header"
-        />
-        <Column
-          header="Género"
-          body={genderTemplate}
-          headerClassName="center-header"
-        />
-        <Column
-          field="major"
-          header="Carrera"
-          headerClassName="center-header"
-        />
-        <Column
-          field="year"
-          header="Año"
-          headerClassName="center-header"
-        />
+        <Column field="firstName" header="Nombres" />
+        <Column field="lastName" header="Apellidos" />
+        <Column header="Género" body={genderTemplate} />
+        <Column field="major" header="Carrera" />
+        <Column field="year" header="Año" />
         <Column
           header="Dirección"
           body={addressTemplate}
-          headerClassName="center-header"
         />
         <Column
           header="Acciones"
           body={actionsTemplate}
-          headerClassName="center-header"
         />
       </DataTable>
     </div>

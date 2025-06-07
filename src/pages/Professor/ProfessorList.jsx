@@ -207,27 +207,37 @@ const ProfessorList = () => {
   };
 
   const handleDeleteProfessor = async (professorId) => {
-    try {
-      const confirm = window.confirm(
-        "¿Estás seguro de eliminar este profesor?"
-      );
-      if (!confirm) return;
-      await deleteProfessor(professorId);
-      toast.current?.show({
-        severity: "success",
-        summary: "Éxito",
-        detail: "Profesor eliminado correctamente.",
-        life: 3000,
-      });
-      handleSearch();
-    } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          error.response?.data?.message || "Error al eliminar el profesor.",
-        life: 4000,
-      });
+    const result = await Swal.fire({
+      title: "¿Seguro que quieres eliminar este profesor?",
+      text: "Esta acción no se puede deshacer.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#6c757d",
+      confirmButtonText: "Sí, eliminar",
+      cancelButtonText: "Cancelar",
+      reverseButtons: true,
+    });
+
+    if (result.isConfirmed) {
+      try {
+        await deleteProfessor(professorId);
+        toast.current?.show({
+          severity: "success",
+          summary: "Éxito",
+          detail: "Profesor eliminado correctamente.",
+          life: 3000,
+        });
+        handleSearch();
+      } catch (error) {
+        toast.current?.show({
+          severity: "error",
+          summary: "Error",
+          detail:
+            error.response?.data?.message || "Error al eliminar el profesor.",
+          life: 4000,
+        });
+      }
     }
   };
 
@@ -281,9 +291,7 @@ const ProfessorList = () => {
   const wentAbroadTemplate = (row) => (row.wentAbroad ? "Sí" : "No");
 
   const addressTemplate = (row) =>
-    row.address
-      ? `${row.address.street} ${row.address.number}`
-      : "-";
+    row.address ? `${row.address.street} ${row.address.number}` : "-";
 
   const actionsTemplate = (row) => (
     <div style={{ display: "flex", gap: "0.5rem" }}>
