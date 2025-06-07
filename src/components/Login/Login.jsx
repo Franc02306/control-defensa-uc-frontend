@@ -35,7 +35,7 @@ const Login = () => {
 
     try {
       const response = await login({ username, password });
-      const token = response.data.data.token;
+      const token = response.data.result.token;
 
       // Guardar el token en el localStorage
       loginContext(token);

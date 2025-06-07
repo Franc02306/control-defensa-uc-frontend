@@ -53,14 +53,14 @@ const ProfessorList = () => {
   }) => {
     setLoading(true);
     try {
-      const res = await searchProfessors(
+      const response = await searchProfessors(
         province,
         municipality,
         wentAbroad,
         academicRank
       );
 
-      setProfessors(res.data.data);
+      setProfessors(response.data.result);
     } catch (error) {
       toast.current?.show({
         severity: "error",
@@ -86,9 +86,9 @@ const ProfessorList = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const res = await getProvinces();
+        const response = await getProvinces();
         setProvinces(
-          res.data.map((p) => ({
+          response.data.map((p) => ({
             label: p.name,
             value: p.name,
           }))
@@ -115,9 +115,9 @@ const ProfessorList = () => {
         return;
       }
       try {
-        const res = await getMunicipalitiesByProvince(searchProvince);
+        const response = await getMunicipalitiesByProvince(searchProvince);
         setMunicipalities(
-          res.data.map((m) => ({
+          response.data.map((m) => ({
             label: m.name,
             value: m.name,
           }))
@@ -139,9 +139,9 @@ const ProfessorList = () => {
     // Cargar categorías docentes (Academic Ranks)
     const fetchAcademicRanks = async () => {
       try {
-        const res = await getAcademicRanks();
+        const response = await getAcademicRanks();
         setAcademicRankOptions(
-          res.data.data.map((rank) => ({
+          response.data.result.map((rank) => ({
             label: rank.name, // Mostrar nombre al usuario
             value: rank.name, // Se usa el nombre como valor, igual que tu API espera
           }))
@@ -164,9 +164,9 @@ const ProfessorList = () => {
     // Cargar áreas
     const fetchAreas = async () => {
       try {
-        const res = await getAreas();
+        const response = await getAreas();
         setAreaOptions(
-          res.data.data.map((area) => ({
+          response.data.result.map((area) => ({
             label: area.name, // Mostrar nombre al usuario
             value: area.name, // Usar nombre como valor para el filtro
           }))
@@ -243,12 +243,12 @@ const ProfessorList = () => {
     }
     setCalculatingAvg(true);
     try {
-      const res = await getAverageAgeProfessors(
+      const response = await getAverageAgeProfessors(
         searchArea,
         searchProvince,
         searchWentAbroad
       );
-      const avg = res.data.data;
+      const avg = response.data.result;
       Swal.fire({
         icon: "info",
         title: "Información",
@@ -282,7 +282,7 @@ const ProfessorList = () => {
 
   const addressTemplate = (row) =>
     row.address
-      ? `${row.address.street} ${row.address.number}, ${row.address.municipality}, ${row.address.province}`
+      ? `${row.address.street} ${row.address.number}`
       : "-";
 
   const actionsTemplate = (row) => (
@@ -302,7 +302,7 @@ const ProfessorList = () => {
         icon="pi pi-pencil"
         className="p-button-text p-button-plain p-button-sm"
         tooltip="Editar"
-        onClick={() => navigate(`/professors/edit/${row.id}`)}
+        onClick={() => navigate(`/profesores/editar/${row.id}`)}
         style={{
           padding: "0.25rem",
           fontSize: "1rem",

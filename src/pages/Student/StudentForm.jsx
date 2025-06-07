@@ -55,7 +55,7 @@ const StudentForm = () => {
   const fetchStudent = async (studentId) => {
     try {
       const response = await getStudentById(studentId);
-      setFormData(response.data.data);
+      setFormData(response.data);
     } catch (error) {
       toast.current?.show({
         severity: "error",
@@ -98,7 +98,7 @@ const StudentForm = () => {
     const fetchMajors = async () => {
       try {
         const response = await getMajors();
-        const mapped = response.data.data.map((m) => ({
+        const mapped = response.data.result.map((m) => ({
           label: m.name, // Lo que verá el usuario
           value: m.name, // Guardamos el nombre, no el id, para cumplir el requerimiento
         }));

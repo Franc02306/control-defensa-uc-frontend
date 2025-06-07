@@ -19,7 +19,7 @@ body,
 
 .p-datepicker {
   width: 500px !important;
-  height: 400px !important;;
+  height: 400px !important;
   min-width: 320px !important;
   max-width: 95vw !important;
 }
@@ -34,6 +34,34 @@ body,
   width: 100% !important;
   min-width: unset !important;
   max-width: unset !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td {
+  text-align: center !important;
+  vertical-align: middle !important;
+}
+
+.p-datatable .p-datatable-tbody > tr > td * {
+  text-align: center !important;
+  margin: 0 auto !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th .p-column-header-content {
+  justify-content: center !important;
+}
+
+.p-datatable .p-datatable-thead > tr > th .p-column-title {
+  width: 100%;
+  text-align: center !important;
+  display: block;
+}
+
+.p-tooltip .p-tooltip-text {
+  white-space: nowrap !important;
+  max-width: none !important;
+  font-size: 0.95rem;
+  padding: 0.5rem 1rem;
+  text-align: center;
 }
 
 @media (max-width: 480px) {

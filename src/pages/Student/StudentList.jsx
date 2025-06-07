@@ -13,6 +13,7 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import "./StudentList.css"
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
@@ -48,8 +49,8 @@ const StudentList = () => {
     }
     setCalculatingAvg(true);
     try {
-      const res = await getAverageAge(searchYear, searchProvince);
-      const avg = res.data.data;
+      const response = await getAverageAge(searchYear, searchProvince);
+      const avg = response.data.result;
       Swal.fire({
         icon: "info",
         title: "Información",
@@ -60,7 +61,8 @@ const StudentList = () => {
         icon: "error",
         title: "Error",
         text:
-          error.response?.data?.message || "No se pudo obtener el promedio de edades.",
+          error.response?.data?.message ||
+          "No se pudo obtener el promedio de edades.",
       });
     } finally {
       setCalculatingAvg(false);
@@ -70,13 +72,14 @@ const StudentList = () => {
   const fetchStudents = async (name, year, province) => {
     setLoading(true);
     try {
-      const res = await searchStudents(name, year, province);
-      setStudents(res.data.data);
+      const response = await searchStudents(name, year, province);
+      setStudents(response.data.result);
     } catch (error) {
       toast.current?.show({
         severity: "error",
         summary: "Error",
-        detail: error.res?.data?.message || "Error al cargar los Estudiantes.",
+        detail:
+          error.response?.data?.message || "Error al cargar los Estudiantes.",
         life: 4000,
       });
     } finally {
@@ -91,8 +94,8 @@ const StudentList = () => {
   useEffect(() => {
     const fetchProvinces = async () => {
       try {
-        const res = await getProvinces();
-        const mapped = res.data.map((p) => ({
+        const response = await getProvinces();
+        const mapped = response.data.map((p) => ({
           label: p.name,
           value: p.name,
         }));
@@ -101,7 +104,8 @@ const StudentList = () => {
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail: error.res?.data?.message || "Error al cargar las Provincias.",
+          detail:
+            error.response?.data?.message || "Error al cargar las Provincias.",
           life: 4000,
         });
       }
@@ -125,9 +129,7 @@ const StudentList = () => {
     row.gender === "M" ? "Masculino" : "Femenino";
 
   const addressTemplate = (row) =>
-    row.address
-      ? `${row.address.street} ${row.address.number}, ${row.address.municipality}, ${row.address.province}`
-      : "-";
+    row.address ? `${row.address.street} ${row.address.number}` : "-";
 
   const actionsTemplate = (row) => {
     return (
@@ -334,19 +336,48 @@ const StudentList = () => {
           border: "1px solid #ddd",
         }}
         className="p-datatable-sm p-datatable-gridlines p-datatable-striped"
+        id="my-student-table"
         emptyMessage={
           <div style={{ textAlign: "center" }}>
             No se encontraron estudiantes.
           </div>
         }
       >
-        <Column field="firstName" header="Nombres" />
-        <Column field="lastName" header="Apellidos" />
-        <Column header="Género" body={genderTemplate} />
-        <Column field="major" header="Carrera" />
-        <Column field="year" header="Año" />
-        <Column header="Dirección" body={addressTemplate} />
-        <Column header="Acciones" body={actionsTemplate} />
+        <Column
+          field="firstName"
+          header="Nombres"
+          headerClassName="center-header"
+        />
+        <Column
+          field="lastName"
+          header="Apellidos"
+          headerClassName="center-header"
+        />
+        <Column
+          header="Género"
+          body={genderTemplate}
+          headerClassName="center-header"
+        />
+        <Column
+          field="major"
+          header="Carrera"
+          headerClassName="center-header"
+        />
+        <Column
+          field="year"
+          header="Año"
+          headerClassName="center-header"
+        />
+        <Column
+          header="Dirección"
+          body={addressTemplate}
+          headerClassName="center-header"
+        />
+        <Column
+          header="Acciones"
+          body={actionsTemplate}
+          headerClassName="center-header"
+        />
       </DataTable>
     </div>
   );

@@ -36,7 +36,7 @@ const Header = () => {
       allowOutsideClick: false,
       allowEscapeKey: false,
     }).then((result) => {
-      if (result.isConfirmed) {
+      if (result.isConfirmed || result.dismiss === Swal.DismissReason.timer) {
         logout();
         navigate("/login");
       }
