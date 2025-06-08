@@ -319,7 +319,6 @@ const StudentList = () => {
             flex: "0.5",
             display: "flex",
             alignItems: "center",
-            justifyContent: "center",
             padding: "0 1rem", // Espaciado interno para mejor visualización
           }}
         />
@@ -387,13 +386,18 @@ const StudentList = () => {
           border: "1px solid #ddd",
         }}
         className="p-datatable-sm p-datatable-gridlines p-datatable-striped"
-        id="my-student-table"
         emptyMessage={
           <div style={{ textAlign: "center" }}>
             No se encontraron estudiantes.
           </div>
         }
       >
+        <Column
+          header="#"
+          headerStyle={{ width: "3rem", textAlign: "center" }}
+          body={(data, options) => options.rowIndex + 1}
+          style={{ textAlign: "center" }}
+        />
         <Column field="firstName" header="Nombres" />
         <Column field="lastName" header="Apellidos" />
         <Column body={genderTemplate} header="Género" />
