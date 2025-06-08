@@ -292,12 +292,15 @@ const StudentList = () => {
       </div>
 
       <div
+        className="student-filters-row"
         style={{
           display: "flex",
           gap: "0.5rem",
           alignItems: "center",
           marginBottom: "1rem",
           flexWrap: "wrap",
+          width: "100%", // <<--- clave para forzar todo el ancho
+          justifyContent: "flex-start", // <<--- clave para alinear a la izquierda
         }}
       >
         <AutoComplete
