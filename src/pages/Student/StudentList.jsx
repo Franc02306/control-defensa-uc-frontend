@@ -316,10 +316,9 @@ const StudentList = () => {
           style={{
             borderRadius: "8px",
             height: "40px",
-            flex: "0.5",
-            display: "flex",
-            alignItems: "center",
-            padding: "0 1rem", // Espaciado interno para mejor visualización
+            minWidth: "280px",
+            maxWidth: "280px",
+            width: "100%",
           }}
         />
         <Dropdown
@@ -334,7 +333,6 @@ const StudentList = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "0 1rem", // Espaciado interno para mejor visualización
           }}
         />
         <Dropdown
@@ -349,7 +347,6 @@ const StudentList = () => {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            padding: "0 1rem", // Espaciado interno para mejor visualización
           }}
         />
         <Button
