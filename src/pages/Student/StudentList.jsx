@@ -1,10 +1,12 @@
 import React, { useEffect, useState, useRef } from "react";
 import {
   searchStudents,
+  suggestStudents,
   deleteStudent,
   getAverageAge,
 } from "../../services/studentService";
 import { getProvinces } from "../../services/locationService";
+import { AutoComplete } from "primereact/autocomplete";
 import { InputText } from "primereact/inputtext";
 import { DataTable } from "primereact/datatable";
 import { Column } from "primereact/column";
@@ -18,6 +20,7 @@ import "./StudentList.css";
 
 const StudentList = () => {
   const [students, setStudents] = useState([]);
+  const [suggestionsName, setSuggestionsName] = useState([]);
   const [searchName, setSearchName] = useState("");
   const [searchYear, setSearchYear] = useState(null);
   const [provinces, setProvinces] = useState([]);
@@ -39,6 +42,26 @@ const StudentList = () => {
     { label: "Año 5", value: 5 },
     { label: "Año 6", value: 6 },
   ];
+
+  const searchStudentSuggestions = async (event) => {
+    if (!event.query) {
+      setSuggestionsName([]);
+      return;
+    }
+
+    try {
+      const response = await suggestStudents(event.query);
+      setSuggestionsName(
+        response.data.result.map((s) => ({
+          label: `${s.firstName} ${s.lastName}`,
+          value: `${s.firstName} ${s.lastName}`, // el value también es string
+          obj: s, // guardamos el objeto si quieres después usarlo
+        }))
+      );
+    } catch {
+      setSuggestionsName([]);
+    }
+  };
 
   const handleAverageAge = async () => {
     if (!searchYear || !searchProvince) {
@@ -122,7 +145,7 @@ const StudentList = () => {
   }, []);
 
   const handleSearch = () => {
-    fetchStudents(searchName, searchYear, searchProvince);
+    fetchStudents(searchName.label, searchYear, searchProvince);
   };
 
   const handleClearFilters = () => {
@@ -269,10 +292,13 @@ const StudentList = () => {
           flexWrap: "wrap",
         }}
       >
-        <InputText
-          value={searchName}
-          onChange={(e) => setSearchName(e.target.value)}
-          placeholder="Buscar por Nombre..."
+        <AutoComplete
+          value={searchName} // <-- siempre string
+          suggestions={suggestionsName}
+          completeMethod={searchStudentSuggestions}
+          onChange={(e) => setSearchName(e.value)}
+          field="label"
+          placeholder="Buscar Estudiante..."
           style={{
             borderRadius: "8px",
             height: "40px",

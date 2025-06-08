@@ -34,6 +34,12 @@ export const getStudentById = (id) => {
   return API.get(`/student/${id}`);
 };
 
+export const suggestStudents = (query) => {
+  return API.get("student/suggest", {
+    params: { query },
+  });
+};
+
 // SERVICIO DELETE
 export const deleteStudent = (id) => {
   return API.delete(`/student/${id}`);
