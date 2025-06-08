@@ -32,12 +32,12 @@ const StudentList = () => {
   const { showLoading, hideLoading } = useLoading();
 
   const yearOptions = [
-    { label: "1", value: 1 },
-    { label: "2", value: 2 },
-    { label: "3", value: 3 },
-    { label: "4", value: 4 },
-    { label: "5", value: 5 },
-    { label: "6", value: 6 },
+    { label: "Año 1", value: 1 },
+    { label: "Año 2", value: 2 },
+    { label: "Año 3", value: 3 },
+    { label: "Año 4", value: 4 },
+    { label: "Año 5", value: 5 },
+    { label: "Año 6", value: 6 },
   ];
 
   const handleAverageAge = async () => {
@@ -325,11 +325,10 @@ const StudentList = () => {
           }}
         />
         <Button
+          label="Limpiar filtros"
           icon="pi pi-eraser"
           className="p-button-secondary"
           onClick={handleClearFilters}
-          tooltip="Limpiar filtros"
-          tooltipOptions={{ position: "top" }}
           style={{
             borderRadius: "8px",
             height: "40px",
@@ -357,11 +356,12 @@ const StudentList = () => {
       >
         <Column field="firstName" header="Nombres" />
         <Column field="lastName" header="Apellidos" />
-        <Column header="Género" body={genderTemplate} />
+        <Column body={genderTemplate} header="Género" />
+        <Column field="age" header="Edad" />
         <Column field="major" header="Carrera" />
         <Column field="year" header="Año" />
-        <Column header="Provincia" body={addressTemplate} />
-        <Column header="Acciones" body={actionsTemplate} />
+        <Column body={addressTemplate} header="Provincia" />
+        <Column body={actionsTemplate} header="Acciones" />
       </DataTable>
     </div>
   );

@@ -15,6 +15,7 @@ import { Dropdown } from "primereact/dropdown";
 import { Calendar } from "primereact/calendar";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
+import { useLoading } from "../../context/LoadingContext";
 import "./StudentForm.css";
 
 const StudentForm = () => {
@@ -25,6 +26,7 @@ const StudentForm = () => {
     lastName: "",
     gender: "",
     birthDate: null,
+    age: 0,
     major: "",
     year: 1,
     teacherAverage: 0,
@@ -32,7 +34,7 @@ const StudentForm = () => {
       street: "",
       number: "",
       idProvince: null,
-      idMunicipality: null, // Cambiado
+      idMunicipality: null,
     },
   });
 
@@ -44,95 +46,95 @@ const StudentForm = () => {
   const [majors, setMajors] = useState([]);
   const [provinces, setProvinces] = useState([]);
   const [municipalities, setMunicipalities] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); // Se usa al guardar o actualizar
   const toast = useRef(null);
+
+  // Pantalla de carga para toda la vista
+  const { showLoading, hideLoading } = useLoading();
 
   const genders = [
     { label: "Masculino", value: "M" },
     { label: "Femenino", value: "F" },
   ];
 
-  const fetchStudent = async (studentId) => {
-    try {
-      const response = await getStudentById(studentId);
-      const data = response.data.result;
-
-      if (data.address && data.address.idProvince) {
-        const muniResponse = await getMunicipalitiesByProvince(
-          data.address.idProvince
-        );
-        const mapped = muniResponse.data.map((m) => ({
-          label: m.name,
-          value: m.id,
-        }));
-        setMunicipalities(mapped);
-      }
-
-      setFormData((prev) => ({
-        ...prev,
-        ...data,
-        birthDate: data.birthDate ? new Date(data.birthDate) : null,
-      }));
-    } catch (error) {
-      toast.current?.show({
-        severity: "error",
-        summary: "Error",
-        detail:
-          error.response?.data?.message || "No se pudo cargar el estudiante",
-        life: 4000,
-      });
-    }
-  };
+  const yearOptions = [
+    { label: "Año 1", value: 1 },
+    { label: "Año 2", value: 2 },
+    { label: "Año 3", value: 3 },
+    { label: "Año 4", value: 4 },
+    { label: "Año 5", value: 5 },
+    { label: "Año 6", value: 6 },
+  ];
 
   useEffect(() => {
-    if (id) fetchStudent(id);
-  }, [id]);
+    (async () => {
+      showLoading(); // Muestra la pantalla de carga global
 
-  useEffect(() => {
-    const fetchProvinces = async () => {
       try {
-        const response = await getProvinces();
-        const mapped = response.data.map((p) => ({
+        // 1. Provincias
+        const provincesResponse = await getProvinces();
+        const mappedProvinces = provincesResponse.data.map((p) => ({
           label: p.name,
           value: p.id,
         }));
-        setProvinces(mapped);
+        setProvinces(mappedProvinces);
+
+        // 2. Carreras
+        const majorsResponse = await getMajors();
+        const mappedMajors = majorsResponse.data.result.map((m) => ({
+          label: m.name,
+          value: m.name,
+        }));
+        setMajors(mappedMajors);
+
+        // 3. Si es edición, cargar estudiante y municipios
+        if (id) {
+          const studentResponse = await getStudentById(id);
+          const data = studentResponse.data.result;
+
+          // Si tiene provincia cargada, traer municipios
+          if (data.address && data.address.idProvince) {
+            const muniResponse = await getMunicipalitiesByProvince(
+              data.address.idProvince
+            );
+            const mappedMunis = muniResponse.data.map((m) => ({
+              label: m.name,
+              value: m.id,
+            }));
+            setMunicipalities(mappedMunis);
+          }
+
+          // Setear datos del estudiante en el form
+          setFormData((prev) => ({
+            ...prev,
+            ...data,
+            birthDate: data.birthDate ? new Date(data.birthDate) : null,
+          }));
+        }
       } catch (error) {
         toast.current?.show({
           severity: "error",
           summary: "Error",
-          detail:
-            error.response?.data?.message ||
-            "No se pudieron cargar las provincias",
+          detail: error.response?.data?.message || "Error al cargar datos del formulario.",
           life: 4000,
         });
+      } finally {
+        hideLoading(); // Siempre oculta la pantalla de carga
       }
-    };
-    fetchProvinces();
-  }, []);
+    })();
+    // eslint-disable-next-line
+  }, [id]);
 
   useEffect(() => {
-    const fetchMajors = async () => {
-      try {
-        const response = await getMajors();
-        const mapped = response.data.result.map((m) => ({
-          label: m.name, // Lo que verá el usuario
-          value: m.name, // Guardamos el nombre, no el id, para cumplir el requerimiento
-        }));
-        setMajors(mapped);
-      } catch (error) {
-        toast.current?.show({
-          severity: "error",
-          summary: "Error",
-          detail:
-            error.response?.data?.message ||
-            "No se pudieron cargar las carreras.",
-          life: 4000,
-        });
-      }
-    };
-    fetchMajors();
-  }, []);
+    if (!formData.birthDate) return;
+    const today = new Date();
+    let age = today.getFullYear() - formData.birthDate.getFullYear();
+    const m = today.getMonth() - formData.birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < formData.birthDate.getDate())) {
+      age--;
+    }
+    setFormData((prev) => ({ ...prev, age: age >= 0 ? age : 0 }));
+  }, [formData.birthDate]);
 
   const handleProvinceChange = async (e) => {
     const selectedProvince = e.value;
@@ -213,6 +215,7 @@ const StudentForm = () => {
       gender,
       birthDate,
       major,
+      year,
       address: { street, number, idProvince, idMunicipality },
     } = formData;
 
@@ -225,6 +228,7 @@ const StudentForm = () => {
       !gender ||
       !birthDate ||
       !major ||
+      !year ||
       !street ||
       !number ||
       !idProvince ||
@@ -278,7 +282,6 @@ const StudentForm = () => {
 
     const finalData = {
       ...formData,
-      year: 1,
       teacherAverage: 0,
     };
 
@@ -316,75 +319,152 @@ const StudentForm = () => {
   return (
     <div className="card">
       <Toast ref={toast} />
-      <h2>{id ? "Editar Estudiante" : "Registrar Estudiante"}</h2>
-      <div className="p-fluid">
-        <div className="field">
-          <label htmlFor="firstName">Nombres</label>
-          <InputText
-            value={formData.firstName}
-            onChange={(e) => handleChange(e, "firstName")}
-            maxLength={100}
-          />
-          {formData.firstName.length >= 100 && (
-            <small className="p-error">Máximo 100 carácteres permitidos</small>
-          )}
-          {nameError && <small className="p-error">{nameError}</small>}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          marginBottom: "1rem",
+        }}
+      >
+        <Button
+          icon="pi pi-arrow-left"
+          className="p-button-text p-button-secondary"
+          onClick={() => navigate("/estudiantes")}
+          style={{
+            borderRadius: "50%",
+            width: "2.5rem",
+            height: "2.5rem",
+            fontSize: "1.3rem",
+            color: "#495057",
+            marginRight: "0.5rem",
+          }}
+          tooltip="Regresar"
+          tooltipOptions={{ position: "bottom" }}
+        />
+        <h2 style={{ margin: 0 }}>
+          {id ? "Editar Estudiante" : "Registrar Estudiante"}
+        </h2>
+      </div>
+      <div className="p-fluid student-form-grid">
+        <div className="form-row">
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="firstName">Nombres</label>
+            <InputText
+              value={formData.firstName}
+              onChange={(e) => handleChange(e, "firstName")}
+              maxLength={100}
+              placeholder="Ingresar Nombres"
+            />
+            {formData.firstName.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 carácteres permitidos
+              </small>
+            )}
+            {nameError && <small className="p-error">{nameError}</small>}
+          </div>
+
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="lastName">Apellidos</label>
+            <InputText
+              value={formData.lastName}
+              onChange={(e) => handleChange(e, "lastName")}
+              maxLength={100}
+              placeholder="Ingresar Apellidos"
+            />
+            {formData.lastName.length >= 100 && (
+              <small className="p-error">
+                Máximo 100 carácteres permitidos
+              </small>
+            )}
+            {lastNameError && (
+              <small className="p-error">{lastNameError}</small>
+            )}
+          </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="lastName">Apellidos</label>
-          <InputText
-            value={formData.lastName}
-            onChange={(e) => handleChange(e, "lastName")}
-            maxLength={100}
-          />
-          {formData.lastName.length >= 100 && (
-            <small className="p-error">Máximo 100 carácteres permitidos</small>
-          )}
-          {lastNameError && <small className="p-error">{lastNameError}</small>}
+        <div className="form-row">
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="gender">Género</label>
+            <Dropdown
+              value={formData.gender}
+              options={genders}
+              onChange={(e) => handleChange(e, "gender")}
+              placeholder="Seleccionar Género"
+              disabled={!!id}
+            />
+          </div>
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              gap: "0.5rem",
+              alignItems: "flex-end",
+            }}
+          >
+            <div className="field" style={{ flex: 10 }}>
+              <label htmlFor="birthDate">Fecha de Nacimiento</label>
+              <Calendar
+                value={formData.birthDate}
+                onChange={(e) => handleChange(e, "birthDate")}
+                showIcon
+                dateFormat="dd/mm/yy"
+                placeholder="Seleccionar fecha"
+                disabled={!!id}
+              />
+            </div>
+            <div className="field" style={{ flex: 1 }}>
+              <label htmlFor="age">Edad</label>
+              <InputText
+                value={formData.age}
+                disabled
+                style={{
+                  background: "#f4f6f8",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  width: "65px",
+                }}
+                tabIndex={-1}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="field">
-          <label htmlFor="gender">Género</label>
-          <Dropdown
-            value={formData.gender}
-            options={genders}
-            onChange={(e) => handleChange(e, "gender")}
-          />
-        </div>
-
-        <div className="field">
-          <label htmlFor="birthDate">Fecha de Nacimiento</label>
-          <Calendar
-            value={formData.birthDate}
-            onChange={(e) => handleChange(e, "birthDate")}
-            showIcon
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona la fecha"
-          />
-        </div>
-
-        <div className="field">
-          <label htmlFor="major">Carrera</label>
-          <Dropdown
-            value={formData.major}
-            options={majors}
-            onChange={(e) => handleChange(e, "major")}
-            placeholder="Seleccione una carrera"
-          />
+        <div className="form-row">
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="major">Carrera</label>
+            <Dropdown
+              value={formData.major}
+              options={majors}
+              onChange={(e) => handleChange(e, "major")}
+              placeholder="Seleccionar Carrera"
+            />
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="year">Año</label>
+            <Dropdown
+              value={formData.year}
+              onChange={(e) => handleChange(e, "year")}
+              options={yearOptions}
+              placeholder="Seleccionar Año"
+            />
+          </div>
         </div>
 
         {/* Dropdown Provincia y Municipio */}
-        <div className="field">
-          <label>Provincia y Municipio</label>
-          <div style={{ display: "flex", gap: "1rem" }}>
+        <div className="form-row">
+          <div className="field" style={{ flex: 1 }}>
+            <label>Provincia</label>
             <Dropdown
               value={formData.address.idProvince}
               options={provinces}
               onChange={handleProvinceChange}
-              placeholder="Seleccione una Provincia"
+              placeholder="Seleccionar Provincia"
               style={{ flex: 1 }}
             />
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <label>Municipio</label>
             <Dropdown
               value={formData.address.idMunicipality}
               options={municipalities}
@@ -394,7 +474,7 @@ const StudentForm = () => {
                   address: { ...formData.address, idMunicipality: e.value },
                 })
               }
-              placeholder="Seleccione un Municipio"
+              placeholder="Seleccionar Municipio"
               disabled={!formData.address.idProvince}
               style={{ flex: 1 }}
             />
@@ -402,42 +482,41 @@ const StudentForm = () => {
         </div>
 
         {/* Dirección (Calle y Número) */}
-        <div className="field">
-          <label>Calle y Número</label>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <div style={{ flex: 2 }}>
-              <InputText
-                placeholder="Calle"
-                value={formData.address.street}
-                onChange={(e) => handleChange(e, "address.street")}
-                style={{ flex: 2 }}
-                maxLength={150}
-              />
-              {formData.address.street.length >= 150 && (
-                <small className="p-error">
-                  Máximo 150 carácteres permitidos
-                </small>
-              )}
-              {streetError && <small className="p-error">{streetError}</small>}
-            </div>
-            <div style={{ flex: 1 }}>
-              <InputText
-                placeholder="Número"
-                value={formData.address.number}
-                onChange={(e) => handleChange(e, "address.number")}
-                onBeforeInput={(e) => {
-                  // Solo permite números (bloquea letras y otros símbolos)
-                  if (!/^[0-9]$/.test(e.data)) {
-                    e.preventDefault();
-                  }
-                }}
-                style={{ flex: 1 }}
-                maxLength={10}
-              />
-              {formData.address.number.length >= 10 && (
-                <small className="p-error">Máximo 10 dígitos permitidos</small>
-              )}
-            </div>
+        <div className="form-row">
+          <div className="field" style={{ flex: 1 }}>
+            <label>Calle</label>
+            <InputText
+              value={formData.address.street}
+              onChange={(e) => handleChange(e, "address.street")}
+              style={{ flex: 2 }}
+              maxLength={150}
+              placeholder="Ingresar Calle"
+            />
+            {formData.address.street.length >= 150 && (
+              <small className="p-error">
+                Máximo 150 carácteres permitidos
+              </small>
+            )}
+            {streetError && <small className="p-error">{streetError}</small>}
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <label>Número</label>
+            <InputText
+              placeholder="Ingresar Número"
+              value={formData.address.number}
+              onChange={(e) => handleChange(e, "address.number")}
+              onBeforeInput={(e) => {
+                // Solo permite números (bloquea letras y otros símbolos)
+                if (!/^[0-9]$/.test(e.data)) {
+                  e.preventDefault();
+                }
+              }}
+              style={{ flex: 1 }}
+              maxLength={10}
+            />
+            {formData.address.number.length >= 10 && (
+              <small className="p-error">Máximo 10 dígitos permitidos</small>
+            )}
           </div>
         </div>
 
