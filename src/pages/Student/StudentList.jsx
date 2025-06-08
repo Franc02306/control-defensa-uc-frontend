@@ -16,6 +16,7 @@ import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingContext";
+import StudentDetail from "../Student/StudentDetail";
 import "./StudentList.css";
 
 const StudentList = () => {
@@ -25,6 +26,10 @@ const StudentList = () => {
   const [searchYear, setSearchYear] = useState(null);
   const [provinces, setProvinces] = useState([]);
   const [searchProvince, setSearchProvince] = useState(null);
+
+  // Estados para ver el modal
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedStudent, setSelectedStudent] = useState(null);
 
   // Calcular el promedio de edad de estudiantes
   const [calculatingAvg, setCalculatingAvg] = useState(false);
@@ -168,7 +173,10 @@ const StudentList = () => {
           icon="pi pi-eye"
           className="p-button-text p-button-plain p-button-sm"
           tooltip="Ver Detalles"
-          onClick={() => navigate(`/students/details/${row.id}`)}
+          onClick={() => {
+            setSelectedStudent(row);
+            setShowDetail(true);
+          }}
           style={{
             padding: "0.25rem",
             fontSize: "1rem",
@@ -293,10 +301,13 @@ const StudentList = () => {
         }}
       >
         <AutoComplete
-          value={searchName} // <-- siempre string
+          value={searchName}
           suggestions={suggestionsName}
           completeMethod={searchStudentSuggestions}
-          onChange={(e) => setSearchName(e.value)}
+          onChange={(e) => {
+            const onlyString = e.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
+            setSearchName(onlyString);
+          }}
           field="label"
           placeholder="Buscar Estudiante..."
           style={{
@@ -389,6 +400,12 @@ const StudentList = () => {
         <Column body={addressTemplate} header="Provincia" />
         <Column body={actionsTemplate} header="Acciones" />
       </DataTable>
+
+      <StudentDetail
+        visible={showDetail}
+        onHide={() => setShowDetail(false)}
+        student={selectedStudent}
+      />
     </div>
   );
 };
