@@ -55,7 +55,24 @@ const StudentForm = () => {
   const fetchStudent = async (studentId) => {
     try {
       const response = await getStudentById(studentId);
-      setFormData(response.data);
+      const data = response.data.result;
+
+      if (data.address && data.address.idProvince) {
+        const muniResponse = await getMunicipalitiesByProvince(
+          data.address.idProvince
+        );
+        const mapped = muniResponse.data.map((m) => ({
+          label: m.name,
+          value: m.id,
+        }));
+        setMunicipalities(mapped);
+      }
+
+      setFormData((prev) => ({
+        ...prev,
+        ...data,
+        birthDate: data.birthDate ? new Date(data.birthDate) : null,
+      }));
     } catch (error) {
       toast.current?.show({
         severity: "error",
