@@ -516,8 +516,6 @@ const ProfessorList = () => {
                 e.value === false && searchWentAbroad !== null ? null : e.value
               );
             }}
-            tooltip="Filtrar solo quienes salieron al extranjero"
-            tooltipOptions={{ position: "top" }}
           />
           <Button
             label="Buscar"

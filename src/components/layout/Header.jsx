@@ -1,26 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import Swal from "sweetalert2";
-import { useEffect, useState } from "react";
 import { Button } from "primereact/button";
 
 const Header = () => {
   const navigate = useNavigate();
   const { logout } = useAuth();
-  const [sidebarVisible, setSidebarVisible] = useState(window.innerWidth > 768);
-
-  useEffect(() => {
-    const handleSidebarToggle = (e) => setSidebarVisible(e.detail);
-    const handleResize = () => setSidebarVisible(window.innerWidth > 768);
-
-    window.addEventListener("sidebarToggle", handleSidebarToggle);
-    window.addEventListener("resize", handleResize);
-
-    return () => {
-      window.removeEventListener("sidebarToggle", handleSidebarToggle);
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
 
   const handleLogout = () => {
     window.dispatchEvent(new Event("cerrarSidebar"));
@@ -46,47 +31,63 @@ const Header = () => {
   const headerStyle = {
     backgroundColor: "#0061c9",
     color: "white",
-    padding: "1rem",
-    display: "flex",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingLeft: sidebarVisible && window.innerWidth > 768 ? "16rem" : "1rem",
-    transition: "padding-left 0.3s ease",
     height: "70px",
+    display: "grid",
+    gridTemplateColumns: "60px 1fr 180px",
+    alignItems: "center",
+    padding: "0 1.5rem",
+    position: "relative",
   };
 
   return (
     <header style={headerStyle}>
-      {/* Botón menú hamburguesa */}
-      <Button
-        icon="pi pi-bars"
-        className="p-button-rounded p-button-text"
+      {/* Col 1: Menú Hamburguesa */}
+      <div style={{ display: "flex", alignItems: "center" }}>
+        <Button
+          icon="pi pi-bars"
+          className="p-button-rounded p-button-text"
+          style={{
+            color: "white",
+            fontSize: "1.5rem",
+            background: "transparent",
+            marginRight: "1rem",
+            display: window.innerWidth <= 768 ? "inline-flex" : "none",
+          }}
+          onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
+          aria-label="Abrir menú"
+          tooltip="Abrir menú"
+        />
+      </div>
+      {/* Col 2: Título CENTRADO */}
+      <h1
         style={{
-          color: "white",
-          fontSize: "1.5rem",
-          background: "transparent",
-          marginRight: "1rem",
-        }}
-        onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
-        aria-label="Abrir menú"
-        tooltip="Abrir menú" // Si usas PrimeReact Tooltip
-      />
-      <h1 style={{ margin: 0, fontSize: "1.6rem" }}>Defensa UC</h1>
-      <Button
-        label="Cerrar Sesión"
-        icon="pi pi-sign-out"
-        className="p-button-rounded p-button-text"
-        style={{
-          backgroundColor: "white",
-          color: "#004080",
-          border: "none",
-          padding: "0.5rem 1rem",
-          borderRadius: "5px",
+          margin: 0,
+          fontSize: "1.6rem",
+          textAlign: "center",
           fontWeight: "bold",
-          fontSize: "1rem"
+          justifySelf: "center",
         }}
-        onClick={handleLogout}
-      />
+      >
+        Defensa UC
+      </h1>
+      {/* Col 3: Botón Cerrar Sesión */}
+      <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <Button
+          label="Cerrar Sesión"
+          icon="pi pi-sign-out"
+          className="p-button-rounded p-button-text"
+          style={{
+            backgroundColor: "white",
+            color: "#004080",
+            border: "none",
+            padding: "0.5rem 1rem",
+            borderRadius: "5px",
+            fontWeight: "bold",
+            fontSize: "1rem",
+          }}
+          onClick={handleLogout}
+        />
+      </div>
     </header>
   );
 };

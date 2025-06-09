@@ -75,6 +75,60 @@ body,
   text-align: center;
 }
 
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.body-container {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar {
+  width: 220px;
+  background: #fff;
+  border-right: 1px solid #e0e0e0;
+  min-height: calc(
+    100vh - 70px - 40px
+  ); /* Ajusta si header/footer cambian de alto */
+  padding-top: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar-title {
+  font-size: 1.3rem;
+  margin: 0 0 1rem 1rem;
+  color: #343a40;
+}
+
+.sidebar-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar-link {
+  transition: background 0.2s;
+}
+
+.sidebar-list .active .sidebar-link,
+.sidebar-link:hover {
+  background: #e7f0fd;
+  color: #0061c9;
+}
+
+.main-content {
+  flex: 1;
+  padding: 2rem;
+  background: #f8f9fa;
+  overflow: auto;
+  min-width: 0;
+}
+
 @media (max-width: 480px) {
   .login-card {
     padding: 2rem;
@@ -106,6 +160,15 @@ body,
 
 /* Ajuste para pantallas muy pequeñas (hasta 768px) */
 @media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+  .main-content {
+    padding: 1rem;
+  }
+  .body-container {
+    flex-direction: column;
+  }
   .auth-card {
     max-width: 350px;
     padding: 1.5rem;

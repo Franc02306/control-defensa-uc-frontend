@@ -5,14 +5,14 @@ import { Outlet } from "react-router-dom";
 
 const Layout = () => {
   return (
-    <div
-      style={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
-    >
+    <div className="app-container">
       <Header />
-      <SidebarMenu />
-      <main style={{ flex: "1", padding: "1rem" }}>
-        <Outlet />
-      </main>
+      <div className="body-container">
+        <SidebarMenu />
+        <main className="main-content">
+          <Outlet />
+        </main>
+      </div>
       <Footer />
     </div>
   );
