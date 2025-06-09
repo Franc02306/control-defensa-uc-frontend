@@ -52,6 +52,7 @@ const Header = () => {
     alignItems: "center",
     paddingLeft: sidebarVisible && window.innerWidth > 768 ? "16rem" : "1rem",
     transition: "padding-left 0.3s ease",
+    height: "70px",
   };
 
   return (
@@ -70,7 +71,7 @@ const Header = () => {
         aria-label="Abrir menú"
         tooltip="Abrir menú" // Si usas PrimeReact Tooltip
       />
-      <h1 style={{ margin: 0 }}>Defensa UC</h1>
+      <h1 style={{ margin: 0, fontSize: "1.6rem" }}>Defensa UC</h1>
       <Button
         label="Cerrar Sesión"
         icon="pi pi-sign-out"
@@ -82,6 +83,7 @@ const Header = () => {
           padding: "0.5rem 1rem",
           borderRadius: "5px",
           fontWeight: "bold",
+          fontSize: "1rem"
         }}
         onClick={handleLogout}
       />

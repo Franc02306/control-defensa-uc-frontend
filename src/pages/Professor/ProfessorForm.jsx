@@ -364,112 +364,126 @@ const ProfessorForm = () => {
         />
         <h2>{id ? "Editar Profesor" : "Registrar Profesor"}</h2>
       </div>
-      <div className="p-fluid">
-        {/* Nombre */}
-        <div className="field">
-          <label htmlFor="firstName">Nombres</label>
-          <InputText
-            value={formData.firstName}
-            onChange={(e) => handleChange(e, "firstName")}
-            maxLength={100}
-          />
-          {(formData.firstName || "").length >= 100 && (
-            <small className="p-error">Máximo 100 caracteres permitidos</small>
-          )}
-          {nameError && <small className="p-error">{nameError}</small>}
+      <div className="p-fluid professor-form-grid">
+        <div className="form-row">
+          {/* Nombres y Apellidos */}
+          <div className="field">
+            <label htmlFor="firstName">Nombres</label>
+            <InputText
+              value={formData.firstName}
+              onChange={(e) => handleChange(e, "firstName")}
+              maxLength={100}
+            />
+            {(formData.firstName || "").length >= 100 && (
+              <small className="p-error">
+                Máximo 100 caracteres permitidos
+              </small>
+            )}
+            {nameError && <small className="p-error">{nameError}</small>}
+          </div>
+
+          {/* Apellido */}
+          <div className="field">
+            <label htmlFor="lastName">Apellidos</label>
+            <InputText
+              value={formData.lastName}
+              onChange={(e) => handleChange(e, "lastName")}
+              maxLength={100}
+            />
+            {(formData.lastName || "").length >= 100 && (
+              <small className="p-error">
+                Máximo 100 caracteres permitidos
+              </small>
+            )}
+            {lastNameError && (
+              <small className="p-error">{lastNameError}</small>
+            )}
+          </div>
         </div>
 
-        {/* Apellido */}
-        <div className="field">
-          <label htmlFor="lastName">Apellidos</label>
-          <InputText
-            value={formData.lastName}
-            onChange={(e) => handleChange(e, "lastName")}
-            maxLength={100}
-          />
-          {(formData.lastName || "").length >= 100 && (
-            <small className="p-error">Máximo 100 caracteres permitidos</small>
-          )}
-          {lastNameError && <small className="p-error">{lastNameError}</small>}
-        </div>
+        {/* Género y Fecha de Nacimiento */}
+        <div className="form-row">
+          <div className="field">
+            <label htmlFor="gender">Género</label>
+            <Dropdown
+              value={formData.gender}
+              options={genders}
+              onChange={(e) => handleChange(e, "gender")}
+              placeholder="Seleccione género"
+            />
+          </div>
 
-        {/* Género */}
-        <div className="field">
-          <label htmlFor="gender">Género</label>
-          <Dropdown
-            value={formData.gender}
-            options={genders}
-            onChange={(e) => handleChange(e, "gender")}
-            placeholder="Seleccione género"
-          />
-        </div>
-
-        {/* Fecha de nacimiento */}
-        <div className="field">
-          <label htmlFor="birthDate">Fecha de Nacimiento</label>
-          <Calendar
-            value={formData.birthDate}
-            onChange={(e) => handleChange(e, "birthDate")}
-            showIcon
-            dateFormat="dd/mm/yy"
-            placeholder="Selecciona la fecha"
-          />
-        </div>
-
-        {/* Área */}
-        <div className="field">
-          <label htmlFor="area">Área</label>
-          <Dropdown
-            value={formData.area}
-            options={areas}
-            onChange={(e) => handleChange(e, "area")}
-            placeholder="Seleccione área"
-          />
-        </div>
-
-        {/* Salió al Extranjero */}
-        <div className="field">
-          <label htmlFor="wentAbroad">¿Salió al Extranjero?</label>
-          <div>
-            <InputSwitch
-              checked={formData.wentAbroad}
-              onChange={(e) =>
-                setFormData((prev) => ({
-                  ...prev,
-                  wentAbroad: e.value,
-                }))
-              }
-              id="wentAbroad"
+          {/* Fecha de nacimiento */}
+          <div className="field">
+            <label htmlFor="birthDate">Fecha de Nacimiento</label>
+            <Calendar
+              value={formData.birthDate}
+              onChange={(e) => handleChange(e, "birthDate")}
+              showIcon
+              dateFormat="dd/mm/yy"
+              placeholder="Selecciona la fecha"
             />
           </div>
         </div>
 
-        {/* Categoría Docente */}
-        <div className="field">
-          <label htmlFor="academicRank">Categoría Docente</label>
-          <Dropdown
-            value={formData.academicRank}
-            options={academicRanks}
-            onChange={(e) => handleChange(e, "academicRank")}
-            placeholder="Seleccione categoría docente"
-          />
+        {/* Área y Viaje Ext. */}
+        <div className="form-row">
+          <div className="field">
+            <label htmlFor="area">Área</label>
+            <Dropdown
+              value={formData.area}
+              options={areas}
+              onChange={(e) => handleChange(e, "area")}
+              placeholder="Seleccione área"
+            />
+          </div>
+
+          {/* Salió al Extranjero */}
+          <div className="field">
+            <label htmlFor="wentAbroad">Viaje Ext.</label>
+            <div>
+              <InputSwitch
+                checked={formData.wentAbroad}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    wentAbroad: e.value,
+                  }))
+                }
+                id="wentAbroad"
+              />
+            </div>
+          </div>
         </div>
 
-        {/* Categoría Científica */}
-        <div className="field">
-          <label htmlFor="scientificCategory">Categoría Científica</label>
-          <Dropdown
-            value={formData.scientificCategory}
-            options={scientificCategories}
-            onChange={(e) => handleChange(e, "scientificCategory")}
-            placeholder="Seleccione categoría científica"
-          />
+        {/* Cat. Docente y Científica */}
+        <div className="form-row">
+          <div className="field">
+            <label htmlFor="academicRank">Categoría Docente</label>
+            <Dropdown
+              value={formData.academicRank}
+              options={academicRanks}
+              onChange={(e) => handleChange(e, "academicRank")}
+              placeholder="Seleccione categoría docente"
+            />
+          </div>
+
+          {/* Categoría Científica */}
+          <div className="field">
+            <label htmlFor="scientificCategory">Categoría Científica</label>
+            <Dropdown
+              value={formData.scientificCategory}
+              options={scientificCategories}
+              onChange={(e) => handleChange(e, "scientificCategory")}
+              placeholder="Seleccione categoría científica"
+            />
+          </div>
         </div>
 
         {/* Provincia y Municipio */}
-        <div className="field">
-          <label>Provincia y Municipio</label>
-          <div style={{ display: "flex", gap: "1rem" }}>
+        <div className="form-row">
+          <div className="field">
+            <label>Provincia</label>
             <Dropdown
               value={formData.address.idProvince}
               options={provinces}
@@ -477,6 +491,9 @@ const ProfessorForm = () => {
               placeholder="Seleccione una Provincia"
               style={{ flex: 1 }}
             />
+          </div>
+          <div className="field">
+            <label>Municipio</label>
             <Dropdown
               value={formData.address.idMunicipality}
               options={municipalities}
@@ -494,39 +511,38 @@ const ProfessorForm = () => {
         </div>
 
         {/* Calle y Número */}
-        <div className="field">
-          <label>Calle y Número</label>
-          <div style={{ display: "flex", gap: "1rem" }}>
-            <div style={{ flex: 2 }}>
-              <InputText
-                placeholder="Calle"
-                value={formData.address.street}
-                onChange={(e) => handleChange(e, "address.street")}
-                maxLength={150}
-              />
-              {formData.address.street.length >= 150 && (
-                <small className="p-error">
-                  Máximo 150 caracteres permitidos
-                </small>
-              )}
-              {streetError && <small className="p-error">{streetError}</small>}
-            </div>
-            <div style={{ flex: 1 }}>
-              <InputText
-                placeholder="Número"
-                value={formData.address.number}
-                onChange={(e) => handleChange(e, "address.number")}
-                onBeforeInput={(e) => {
-                  if (!/^[0-9]$/.test(e.data)) {
-                    e.preventDefault();
-                  }
-                }}
-                maxLength={10}
-              />
-              {formData.address.number.length >= 10 && (
-                <small className="p-error">Máximo 10 dígitos permitidos</small>
-              )}
-            </div>
+        <div className="form-row">
+          <div className="field">
+            <label>Calle</label>
+            <InputText
+              placeholder="Calle"
+              value={formData.address.street}
+              onChange={(e) => handleChange(e, "address.street")}
+              maxLength={150}
+            />
+            {formData.address.street.length >= 150 && (
+              <small className="p-error">
+                Máximo 150 caracteres permitidos
+              </small>
+            )}
+            {streetError && <small className="p-error">{streetError}</small>}
+          </div>
+          <div className="field">
+            <label>Número</label>
+            <InputText
+              placeholder="Número"
+              value={formData.address.number}
+              onChange={(e) => handleChange(e, "address.number")}
+              onBeforeInput={(e) => {
+                if (!/^[0-9]$/.test(e.data)) {
+                  e.preventDefault();
+                }
+              }}
+              maxLength={10}
+            />
+            {formData.address.number.length >= 10 && (
+              <small className="p-error">Máximo 10 dígitos permitidos</small>
+            )}
           </div>
         </div>
 
