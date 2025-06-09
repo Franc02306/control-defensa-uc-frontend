@@ -19,6 +19,8 @@ import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
+import { useLoading } from "../../context/LoadingContext";
+import ProfessorDetail from "../Professor/ProfessorDetail";
 
 const ProfessorList = () => {
   const [professors, setProfessors] = useState([]);
@@ -36,8 +38,9 @@ const ProfessorList = () => {
   const [academicRankOptions, setAcademicRankOptions] = useState([]);
   const [areaOptions, setAreaOptions] = useState([]);
 
-  // Estado de carga
-  const [loading, setLoading] = useState(false);
+  // Estados para ver el modal
+  const [showDetail, setShowDetail] = useState(false);
+  const [selectedProfessor, setSelectedProfessor] = useState(null);
 
   // Calcular el promedio de edad de estudiantes
   const [calculatingAvg, setCalculatingAvg] = useState(false);
@@ -45,13 +48,15 @@ const ProfessorList = () => {
   const toast = useRef(null);
   const navigate = useNavigate();
 
+  const { showLoading, hideLoading } = useLoading();
+
   const fetchProfessors = async ({
     province,
     municipality,
     wentAbroad,
     academicRank,
   }) => {
-    setLoading(true);
+    showLoading();
     try {
       const response = await searchProfessors(
         province,
@@ -70,7 +75,7 @@ const ProfessorList = () => {
         life: 4000,
       });
     } finally {
-      setLoading(false);
+      hideLoading();
     }
   };
 
@@ -81,10 +86,12 @@ const ProfessorList = () => {
       wentAbroad: null,
       academicRank: "",
     });
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    const fetchProvinces = async () => {
+    (async () => {
+      showLoading();
       try {
         const response = await getProvinces();
         setProvinces(
@@ -101,19 +108,21 @@ const ProfessorList = () => {
             error.response?.data?.message || "Error al cargar las Provincias.",
           life: 4000,
         });
+      } finally {
+        hideLoading();
       }
-    };
-    fetchProvinces();
+    })();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    // Si hay provincia seleccionada, carga municipios asociados
     const fetchMunicipalities = async () => {
       if (!searchProvince) {
         setMunicipalities([]);
         setSearchMunicipality(null);
         return;
       }
+      showLoading();
       try {
         const response = await getMunicipalitiesByProvince(searchProvince);
         setMunicipalities(
@@ -130,20 +139,23 @@ const ProfessorList = () => {
             error.response?.data?.message || "Error al cargar los Municipios.",
           life: 4000,
         });
+      } finally {
+        hideLoading();
       }
     };
     fetchMunicipalities();
+    // eslint-disable-next-line
   }, [searchProvince]);
 
   useEffect(() => {
-    // Cargar categorías docentes (Academic Ranks)
-    const fetchAcademicRanks = async () => {
+    (async () => {
+      showLoading();
       try {
         const response = await getAcademicRanks();
         setAcademicRankOptions(
           response.data.result.map((rank) => ({
-            label: rank.name, // Mostrar nombre al usuario
-            value: rank.name, // Se usa el nombre como valor, igual que tu API espera
+            label: rank.name,
+            value: rank.name,
           }))
         );
       } catch (error) {
@@ -155,20 +167,22 @@ const ProfessorList = () => {
             "No se pudo cargar categorías docentes.",
           life: 4000,
         });
+      } finally {
+        hideLoading();
       }
-    };
-    fetchAcademicRanks();
+    })();
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
-    // Cargar áreas
-    const fetchAreas = async () => {
+    (async () => {
+      showLoading();
       try {
         const response = await getAreas();
         setAreaOptions(
           response.data.result.map((area) => ({
-            label: area.name, // Mostrar nombre al usuario
-            value: area.name, // Usar nombre como valor para el filtro
+            label: area.name,
+            value: area.name,
           }))
         );
       } catch (error) {
@@ -178,9 +192,11 @@ const ProfessorList = () => {
           detail: error.response?.data?.message || "No se pudo cargar áreas.",
           life: 4000,
         });
+      } finally {
+        hideLoading();
       }
-    };
-    fetchAreas();
+    })();
+    // eslint-disable-next-line
   }, []);
 
   const handleSearch = () => {
@@ -288,18 +304,35 @@ const ProfessorList = () => {
       ? "Femenino"
       : row.gender;
 
-  const wentAbroadTemplate = (row) => (row.wentAbroad ? "Sí" : "No");
+  const wentAbroadTemplate = (row) =>
+    row.wentAbroad ? (
+      <i
+        className="pi pi-check-circle"
+        style={{ color: "#16a34a", fontSize: 22, fontWeight: "bold" }}
+      />
+    ) : (
+      <i
+        className="pi pi-times-circle"
+        style={{ color: "#ef4444", fontSize: 22, fontWeight: "bold" }}
+      />
+    );
 
-  const addressTemplate = (row) =>
-    row.address ? `${row.address.street} ${row.address.number}` : "-";
+  const provinceTemplate = (row) =>
+    row.address ? `${row.address.province}` : "-";
+
+  const municipalityTemplate = (row) =>
+    row.address ? `${row.address.municipality}` : "-";
 
   const actionsTemplate = (row) => (
-    <div style={{ display: "flex", gap: "0.5rem" }}>
+    <div style={{ display: "flex", gap: "0.5rem", justifyContent: "center" }}>
       <Button
         icon="pi pi-eye"
         className="p-button-text p-button-plain p-button-sm"
         tooltip="Ver Detalles"
-        onClick={() => navigate(`/professors/details/${row.id}`)}
+        onClick={() => {
+          setSelectedProfessor(row);
+          setShowDetail(true);
+        }}
         style={{
           padding: "0.25rem",
           fontSize: "1rem",
@@ -413,7 +446,10 @@ const ProfessorList = () => {
             style={{
               borderRadius: "8px",
               height: "40px",
-              minWidth: "180px",
+              flex: "0.5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           />
           <Dropdown
@@ -424,7 +460,10 @@ const ProfessorList = () => {
             style={{
               borderRadius: "8px",
               height: "40px",
-              minWidth: "180px",
+              flex: "0.5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
             disabled={!searchProvince}
           />
@@ -436,7 +475,10 @@ const ProfessorList = () => {
             style={{
               borderRadius: "8px",
               height: "40px",
-              minWidth: "180px",
+              flex: "0.5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           />
           <Dropdown
@@ -447,7 +489,10 @@ const ProfessorList = () => {
             style={{
               borderRadius: "8px",
               height: "40px",
-              minWidth: "180px",
+              flex: "0.5",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           />
         </div>
@@ -502,9 +547,9 @@ const ProfessorList = () => {
       {/* TABLA */}
       <DataTable
         value={professors}
-        loading={loading}
         paginator
-        rows={10}
+        rows={5}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         style={{
           borderRadius: "12px",
           overflow: "hidden",
@@ -517,15 +562,29 @@ const ProfessorList = () => {
           </div>
         }
       >
+        <Column
+          header="#"
+          headerStyle={{ width: "3rem", textAlign: "center" }}
+          body={(data, options) => options.rowIndex + 1}
+          style={{ textAlign: "center" }}
+        />
         <Column field="firstName" header="Nombres" />
         <Column field="lastName" header="Apellidos" />
-        <Column header="Género" body={genderTemplate} />
+        <Column body={genderTemplate} header="Género" />
+        <Column field="age" header="Edad" />
         <Column field="area" header="Departamento" />
-        <Column header="¿Salió al Extranjero?" body={wentAbroadTemplate} />
+        <Column body={wentAbroadTemplate} header="Viaje Ext." />
         <Column field="academicRank" header="Categoría Docente" />
-        <Column header="Dirección" body={addressTemplate} />
-        <Column header="Acciones" body={actionsTemplate} />
+        <Column body={provinceTemplate} header="Provincia" />
+        <Column body={municipalityTemplate} header="Municipio" />
+        <Column body={actionsTemplate} header="Acciones" />
       </DataTable>
+
+      <ProfessorDetail
+        visible={showDetail}
+        onHide={() => setShowDetail(false)}
+        professor={selectedProfessor}
+      />
     </div>
   );
 };

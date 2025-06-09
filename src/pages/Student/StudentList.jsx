@@ -377,6 +377,7 @@ const StudentList = () => {
         value={students}
         paginator
         rows={5}
+        rowsPerPageOptions={[5, 10, 25, 50]}
         style={{
           borderRadius: "12px",
           overflow: "hidden",

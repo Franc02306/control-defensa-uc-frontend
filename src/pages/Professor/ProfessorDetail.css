@@ -1,0 +1,9 @@
+.professor-detail-fields {
+  line-height: 2.1; /* Más espacio vertical entre líneas */
+  font-size: 1.06rem;
+  margin-bottom: 0.7rem;
+}
+
+.p-dialog-footer .p-button-danger {
+  border-width: 2px !important;
+}

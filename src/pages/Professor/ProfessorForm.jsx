@@ -236,7 +236,6 @@ const ProfessorForm = () => {
       gender,
       birthDate,
       area,
-      wentAbroad,
       academicRank,
       scientificCategory,
       address: { idProvince, idMunicipality, street, number },
@@ -251,7 +250,6 @@ const ProfessorForm = () => {
       !gender ||
       !birthDate ||
       !area ||
-      !wentAbroad ||
       academicRank === "" ||
       scientificCategory === "" ||
       !idProvince ||
@@ -341,7 +339,31 @@ const ProfessorForm = () => {
   return (
     <div className="card">
       <Toast ref={toast} />
-      <h2>{id ? "Editar Profesor" : "Registrar Profesor"}</h2>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "0.5rem",
+          marginBottom: "1rem",
+        }}
+      >
+        <Button
+          icon="pi pi-arrow-left"
+          className="p-button-text p-button-secondary"
+          onClick={() => navigate("/profesores")}
+          style={{
+            borderRadius: "50%",
+            width: "2.5rem",
+            height: "2.5rem",
+            fontSize: "1.3rem",
+            color: "#495057",
+            marginRight: "0.5rem",
+          }}
+          tooltip="Regresar"
+          tooltipOptions={{ position: "bottom" }}
+        />
+        <h2>{id ? "Editar Profesor" : "Registrar Profesor"}</h2>
+      </div>
       <div className="p-fluid">
         {/* Nombre */}
         <div className="field">
