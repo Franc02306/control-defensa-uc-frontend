@@ -29,6 +29,7 @@ const ProfessorForm = () => {
     lastName: "",
     gender: "",
     birthDate: null,
+    age: 0,
     area: "",
     wentAbroad: false,
     academicRank: "",
@@ -186,6 +187,17 @@ const ProfessorForm = () => {
     };
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (!formData.birthDate) return;
+    const today = new Date();
+    let age = today.getFullYear() - formData.birthDate.getFullYear();
+    const m = today.getMonth() - formData.birthDate.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < formData.birthDate.getDate())) {
+      age--;
+    }
+    setFormData((prev) => ({ ...prev, age: age >= 0 ? age : 0 }));
+  }, [formData.birthDate]);
 
   // Manejador de cambios generales
   const handleChange = (e, field) => {
@@ -401,28 +413,53 @@ const ProfessorForm = () => {
           </div>
         </div>
 
-        {/* Género y Fecha de Nacimiento */}
+        {/* Género, Fecha de Nacimiento y Edad */}
         <div className="form-row">
-          <div className="field">
+          <div className="field" style={{ flex: 1 }}>
             <label htmlFor="gender">Género</label>
             <Dropdown
               value={formData.gender}
               options={genders}
               onChange={(e) => handleChange(e, "gender")}
               placeholder="Seleccione género"
+              disabled={!!id}
             />
           </div>
 
-          {/* Fecha de nacimiento */}
-          <div className="field">
-            <label htmlFor="birthDate">Fecha de Nacimiento</label>
-            <Calendar
-              value={formData.birthDate}
-              onChange={(e) => handleChange(e, "birthDate")}
-              showIcon
-              dateFormat="dd/mm/yy"
-              placeholder="Selecciona la fecha"
-            />
+          <div
+            style={{
+              flex: 1,
+              display: "flex",
+              gap: "0.5rem",
+              alignItems: "flex-end",
+            }}
+          >
+            <div className="field" style={{ flex: 10 }}>
+              <label htmlFor="birthDate">Fecha de Nacimiento</label>
+              <Calendar
+                value={formData.birthDate}
+                onChange={(e) => handleChange(e, "birthDate")}
+                showIcon
+                dateFormat="dd/mm/yy"
+                placeholder="Selecciona la fecha"
+                disabled={!!id}
+              />
+            </div>
+
+            <div className="field" style={{ flex: 1 }}>
+              <label htmlFor="age">Edad</label>
+              <InputText
+                value={formData.age}
+                disabled
+                style={{
+                  background: "#f4f6f8",
+                  fontWeight: "bold",
+                  textAlign: "center",
+                  width: "65px",
+                }}
+                tabIndex={-1}
+              />
+            </div>
           </div>
         </div>
 
