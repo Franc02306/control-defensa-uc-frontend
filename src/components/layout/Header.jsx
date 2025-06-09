@@ -44,7 +44,7 @@ const Header = () => {
   };
 
   const headerStyle = {
-    backgroundColor: "#004080",
+    backgroundColor: "#0061c9",
     color: "white",
     padding: "1rem",
     display: "flex",

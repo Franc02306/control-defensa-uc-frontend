@@ -385,6 +385,7 @@ const ProfessorForm = () => {
               value={formData.firstName}
               onChange={(e) => handleChange(e, "firstName")}
               maxLength={100}
+              placeholder="Ingresar Nombres"
             />
             {(formData.firstName || "").length >= 100 && (
               <small className="p-error">
@@ -401,6 +402,7 @@ const ProfessorForm = () => {
               value={formData.lastName}
               onChange={(e) => handleChange(e, "lastName")}
               maxLength={100}
+              placeholder="Ingresar Apellidos"
             />
             {(formData.lastName || "").length >= 100 && (
               <small className="p-error">
@@ -421,7 +423,7 @@ const ProfessorForm = () => {
               value={formData.gender}
               options={genders}
               onChange={(e) => handleChange(e, "gender")}
-              placeholder="Seleccione género"
+              placeholder="Seleccionar Género"
               disabled={!!id}
             />
           </div>
@@ -441,7 +443,7 @@ const ProfessorForm = () => {
                 onChange={(e) => handleChange(e, "birthDate")}
                 showIcon
                 dateFormat="dd/mm/yy"
-                placeholder="Selecciona la fecha"
+                placeholder="Ingresar Fecha de Nacimiento"
                 disabled={!!id}
               />
             </div>
@@ -471,7 +473,7 @@ const ProfessorForm = () => {
               value={formData.area}
               options={areas}
               onChange={(e) => handleChange(e, "area")}
-              placeholder="Seleccione área"
+              placeholder="Seleccionar Área"
             />
           </div>
 
@@ -501,7 +503,7 @@ const ProfessorForm = () => {
               value={formData.academicRank}
               options={academicRanks}
               onChange={(e) => handleChange(e, "academicRank")}
-              placeholder="Seleccione categoría docente"
+              placeholder="Seleccionar Cat. Docente"
             />
           </div>
 
@@ -512,7 +514,7 @@ const ProfessorForm = () => {
               value={formData.scientificCategory}
               options={scientificCategories}
               onChange={(e) => handleChange(e, "scientificCategory")}
-              placeholder="Seleccione categoría científica"
+              placeholder="Seleccionar Cat. Científica"
             />
           </div>
         </div>
@@ -525,7 +527,7 @@ const ProfessorForm = () => {
               value={formData.address.idProvince}
               options={provinces}
               onChange={handleProvinceChange}
-              placeholder="Seleccione una Provincia"
+              placeholder="Seleccionar Provincia"
               style={{ flex: 1 }}
             />
           </div>
@@ -540,7 +542,7 @@ const ProfessorForm = () => {
                   address: { ...prev.address, idMunicipality: e.value },
                 }))
               }
-              placeholder="Seleccione un Municipio"
+              placeholder="Seleccionar Municipio"
               disabled={!formData.address.idProvince}
               style={{ flex: 1 }}
             />
@@ -552,10 +554,10 @@ const ProfessorForm = () => {
           <div className="field">
             <label>Calle</label>
             <InputText
-              placeholder="Calle"
               value={formData.address.street}
               onChange={(e) => handleChange(e, "address.street")}
               maxLength={150}
+              placeholder="Ingresar Calle"
             />
             {formData.address.street.length >= 150 && (
               <small className="p-error">
@@ -567,7 +569,7 @@ const ProfessorForm = () => {
           <div className="field">
             <label>Número</label>
             <InputText
-              placeholder="Número"
+              placeholder="Ingresar Número"
               value={formData.address.number}
               onChange={(e) => handleChange(e, "address.number")}
               onBeforeInput={(e) => {

@@ -531,14 +531,14 @@ const ProfessorList = () => {
             }}
           />
           <Button
+            label="Limpiar filtros"
             icon="pi pi-eraser"
             className="p-button-secondary"
             onClick={handleClearFilters}
-            tooltip="Limpiar filtros"
-            tooltipOptions={{ position: "top" }}
             style={{
               borderRadius: "8px",
               height: "40px",
+              padding: "0.5rem 1rem",
             }}
           />
         </div>

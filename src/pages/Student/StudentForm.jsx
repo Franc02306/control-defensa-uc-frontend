@@ -409,7 +409,7 @@ const StudentForm = () => {
                 onChange={(e) => handleChange(e, "birthDate")}
                 showIcon
                 dateFormat="dd/mm/yy"
-                placeholder="Seleccionar fecha"
+                placeholder="Ingresar Fecha de Nacimiento"
                 disabled={!!id}
               />
             </div>
