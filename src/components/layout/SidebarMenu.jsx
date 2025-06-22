@@ -19,7 +19,6 @@ const SidebarMenu = ({ open, onClose }) => {
     <aside
       className={`sidebar${open ? " open" : ""}`}
       style={{
-        display: open ? "block" : "none", // Solo el estado open controla visibilidad
         zIndex: 1000,
       }}
     >
