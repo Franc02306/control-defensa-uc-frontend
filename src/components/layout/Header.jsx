@@ -33,7 +33,7 @@ const Header = () => {
     color: "white",
     height: "70px",
     display: "grid",
-    gridTemplateColumns: "60px 1fr 180px",
+    gridTemplateColumns: "180px 1fr 180px",
     alignItems: "center",
     padding: "0 1.5rem",
     position: "relative",

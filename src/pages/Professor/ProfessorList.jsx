@@ -507,7 +507,7 @@ const ProfessorList = () => {
           }}
         >
           <span style={{ minWidth: 100, fontWeight: 500 }}>
-            ¿Salió al Extranjero?
+            Viaje Ext.
           </span>
           <InputSwitch
             checked={searchWentAbroad === true}
