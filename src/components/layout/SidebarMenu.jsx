@@ -8,7 +8,7 @@ const menuItems = [
   { label: "Profesores", icon: "pi pi-briefcase", path: "/profesores" },
 ];
 
-const SidebarMenu = () => {
+const SidebarMenu = ({ open, onClose }) => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -16,7 +16,13 @@ const SidebarMenu = () => {
   if (!token) return null;
 
   return (
-    <aside className="sidebar">
+    <aside
+      className={`sidebar${open ? " open" : ""}`}
+      style={{
+        display: open ? "block" : "none", // Solo el estado open controla visibilidad
+        zIndex: 1000,
+      }}
+    >
       <h2 className="sidebar-title">Menú</h2>
       <ul className="sidebar-list">
         {menuItems.map((item, idx) => (
@@ -26,7 +32,10 @@ const SidebarMenu = () => {
           >
             <button
               className="sidebar-link"
-              onClick={() => navigate(item.path)}
+              onClick={() => {
+                navigate(item.path);
+                // onClose();
+              }}
               style={{
                 width: "100%",
                 background: "none",
