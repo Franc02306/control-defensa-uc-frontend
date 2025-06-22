@@ -33,9 +33,7 @@ const SidebarMenu = ({ open, onClose }) => {
               className="sidebar-link"
               onClick={() => {
                 navigate(item.path);
-                if (window.innerWidth <= 768 && onClose) {
-                  onClose();
-                }
+                onClose();
               }}
               style={{
                 width: "100%",
