@@ -168,9 +168,6 @@ body,
 
 /* Ajuste para pantallas muy pequeñas (hasta 768px) */
 @media (max-width: 768px) {
-  .sidebar {
-    display: none;
-  }
   .main-content {
     padding: 1rem;
   }
