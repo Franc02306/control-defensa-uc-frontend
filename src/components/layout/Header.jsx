@@ -51,11 +51,8 @@ const Header = () => {
             fontSize: "1.5rem",
             background: "transparent",
             marginRight: "1rem",
-            display: window.innerWidth <= 768 ? "inline-flex" : "none",
           }}
           onClick={() => window.dispatchEvent(new Event("toggleSidebar"))}
-          aria-label="Abrir menú"
-          tooltip="Abrir menú"
         />
       </div>
       {/* Col 2: Título CENTRADO */}
