@@ -22,6 +22,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingContext";
 import ProfessorDetail from "../Professor/ProfessorDetail";
+import * as XLSX from "xlsx";
 
 const FILTERS = [
   {
@@ -450,6 +451,39 @@ const ProfessorList = () => {
       />
     );
 
+  const handleExportExcel = () => {
+    if (!professors || professors.length === 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Sin datos",
+        detail: "No hay profesores para exportar.",
+        life: 3000,
+      });
+      return;
+    }
+
+    const exportData = professors.map((professor) => ({
+      "Nombre Completo": `${professor.firstName} ${professor.lastName}`,
+      "Género": professor.gender === "M" ? "Masculino" : "Femenino",
+      "Fecha de Nacimiento": formatDate(professor.birthDate),
+      "Edad": professor.age,
+      "Departamento": professor.area,
+      "Categoría Docente": professor.academicRank,
+      "Categoría Científica": professor.scientificCategory,
+      "Viaje Ext.": professor.wentAbroad ? "Sí" : "No",
+      "Provincia": professor.address?.province ?? "",
+      "Municipio": professor.address?.municipality ?? "",
+      "Dirección Principal": `${professor.address?.street ?? ""} ${professor.address?.number ?? ""}`.trim(),
+    }));
+
+    // Crear hoja y libro de Excel
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Profesores");
+
+    XLSX.writeFile(wb, "Profesores.xlsx");
+  };
+
   const formatDate = (isoString) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
@@ -529,6 +563,17 @@ const ProfessorList = () => {
         <h2 style={{ marginBottom: "0" }}>Lista de Profesores</h2>
         <div style={{ display: "flex", gap: "0.7rem" }}>
           <Button
+            label="Agregar"
+            icon="pi pi-plus"
+            className="p-button-success"
+            onClick={() => navigate("/profesores/crear")}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1rem",
+            }}
+          />
+          <Button
             label="Buscar"
             icon="pi pi-search"
             className="p-button-primary"
@@ -551,15 +596,17 @@ const ProfessorList = () => {
             }}
           />
           <Button
-            label="Agregar"
-            icon="pi pi-plus"
+            label="Exportar Excel"
+            icon="pi pi-file-excel"
             className="p-button-success"
-            onClick={() => navigate("/profesores/crear")}
             style={{
               borderRadius: "8px",
               height: "40px",
               padding: "0.5rem 1rem",
+              backgroundColor: "#188038",
+              borderColor: "#188038"
             }}
+            onClick={handleExportExcel}
           />
         </div>
       </div>
@@ -618,7 +665,7 @@ const ProfessorList = () => {
               placeholder="Provincia"
               style={{ borderRadius: 8, height: 40, width: 180 }}
             />
-            <span>¿Salió al extranjero?</span>
+            <span>Viaje Ext.</span>
             <InputSwitch
               checked={searchWentAbroad === true}
               onChange={(e) =>
@@ -675,7 +722,7 @@ const ProfessorList = () => {
               placeholder="Categoría Docente"
               style={{ borderRadius: 8, height: 40, width: 220 }}
             />
-            <span>¿Salió al extranjero?</span>
+            <span>Viaje Ext.</span>
             <InputSwitch
               checked={searchWentAbroad === true}
               onChange={(e) =>
@@ -725,7 +772,7 @@ const ProfessorList = () => {
         <Column field="lastName" header="Apellidos" />
         <Column body={genderTemplate} header="Género" />
         <Column body={birthDateTemplate} header="Fecha de Nacimiento" />
-        <Column field="age" header="Edad" />
+        {/* <Column field="age" header="Edad" /> */}
         <Column field="area" header="Departamento" />
         <Column body={wentAbroadTemplate} header="Viaje Ext." />
         <Column field="academicRank" header="Categoría Docente" />

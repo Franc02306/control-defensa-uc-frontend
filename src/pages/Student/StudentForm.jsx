@@ -282,7 +282,7 @@ const StudentForm = () => {
 
     const finalData = {
       ...formData,
-      teacherAverage: 0,
+      teacherAverage: Number(formData.teacherAverage) || 0,
     };
 
     try {
@@ -439,6 +439,23 @@ const StudentForm = () => {
               onChange={(e) => handleChange(e, "major")}
               placeholder="Seleccionar Carrera"
             />
+          </div>
+          <div className="field" style={{ flex: 1 }}>
+            <label htmlFor="teacherAverage">Promedio Docente</label>
+            <InputText
+              value={formData.teacherAverage}
+              onChange={(e) => {
+                const val = e.target.value.replace(/[^0-9.]/g, "");
+                setFormData({ ...formData, teacherAverage: val });
+              }}
+              placeholder="Ej: 15.5"
+              maxLength={5}
+            />
+            {formData.teacherAverage > 20 && (
+              <small className="p-error">
+                El promedio no puede ser mayor a 20.
+              </small>
+            )}
           </div>
           <div className="field" style={{ flex: 1 }}>
             <label htmlFor="year">Año</label>

@@ -17,6 +17,7 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingContext";
 import StudentDetail from "../Student/StudentDetail";
+import * as XLSX from "xlsx";
 import "./StudentList.css";
 
 const StudentList = () => {
@@ -244,6 +245,49 @@ const StudentList = () => {
     }
   };
 
+  const handleExportExcel = () => {
+    if (!students || students.length === 0) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Sin datos",
+        detail: "No hay estudiantes para exportar.",
+        life: 3000,
+      });
+      return;
+    }
+
+    const exportData = students.map((student) => ({
+      "Nombre Completo": `${student.firstName} ${student.lastName}`,
+      "Género": student.gender === "M" ? "Masculino" : "Femenino",
+      "Fecha de Nacimiento": formatDate(student.birthDate),
+      "Edad": student.age,
+      "Carrera": student.major,
+      "Año": student.year,
+      "Promedio Docente": student.teacherAverage,
+      "Provincia": student.address?.province ?? "",
+      "Municipio": student.address?.municipality ?? "",
+      "Dirección Principal": `${student.address?.street ?? ""} ${student.address?.number ?? ""}`.trim(),
+    }));
+
+    // Crea hoja y libro de Excel
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Estudiantes");
+
+    // Exporta archivo
+    XLSX.writeFile(wb, "Estudiantes.xlsx");
+  };
+
+  const formatDate = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d)) return dateStr;
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const year = d.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
   return (
     <div
       className="card"
@@ -288,6 +332,19 @@ const StudentList = () => {
               padding: "0.5rem 1rem",
             }}
           />
+          <Button
+            label="Exportar Excel"
+            icon="pi pi-file-excel"
+            className="p-button-success"
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1rem",
+              backgroundColor: "#188038",
+              borderColor: "#188038"
+            }}
+            onClick={handleExportExcel}
+          />
         </div>
       </div>
 
@@ -308,8 +365,8 @@ const StudentList = () => {
           suggestions={suggestionsName}
           completeMethod={searchStudentSuggestions}
           onChange={(e) => {
-            const onlyString = e.value.replace(/[^A-Za-zÁÉÍÓÚáéíóúÑñ\s]/g, "");
-            setSearchName(onlyString);
+            // Siempre guarda un string, sea por tipeo o selección
+            setSearchName(e.value);
           }}
           field="label"
           placeholder="Buscar Estudiante..."
