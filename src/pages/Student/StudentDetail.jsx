@@ -18,9 +18,8 @@ const StudentDetail = ({ visible, onHide, student }) => {
 
   // Campos concatenados
   const nombreCompleto = `${student.firstName} ${student.lastName}`;
-  const direccionPrincipal = `${student.address?.street ?? ""} ${
-    student.address?.number ?? ""
-  }`.trim();
+  const direccionPrincipal = `${student.address?.street ?? ""} ${student.address?.number ?? ""
+    }`.trim();
 
   return (
     <Dialog
@@ -52,6 +51,8 @@ const StudentDetail = ({ visible, onHide, student }) => {
         <strong>Carrera:</strong> {student.major}
         <br />
         <strong>Año:</strong> {student.year}
+        <br />
+        <strong>Promedio Docente:</strong> {student.teacherAverage}
         <br />
         <strong>Provincia:</strong> {student.address?.province}
         <br />

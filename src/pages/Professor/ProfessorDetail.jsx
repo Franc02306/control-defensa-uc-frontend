@@ -18,13 +18,12 @@ const ProfessorDetail = ({ visible, onHide, professor }) => {
 
   // Campos concatenados
   const nombreCompleto = `${professor.firstName} ${professor.lastName}`;
-  const direccionPrincipal = `${professor.address?.street ?? ""} ${
-    professor.address?.number ?? ""
-  }`.trim();
+  const direccionPrincipal = `${professor.address?.street ?? ""} ${professor.address?.number ?? ""
+    }`.trim();
 
   return (
     <Dialog
-      header="Detalles del Estudiante"
+      header="Detalles del Profesor"
       visible={visible}
       style={{ width: "400px" }}
       onHide={onHide}
@@ -49,9 +48,13 @@ const ProfessorDetail = ({ visible, onHide, professor }) => {
         <br />
         <strong>Edad:</strong> {professor.age}
         <br />
-        <strong>Carrera:</strong> {professor.major}
+        <strong>Departamento:</strong> {professor.area}
         <br />
-        <strong>Año:</strong> {professor.year}
+        <strong>Categoría Docente:</strong> {professor.academicRank}
+        <br />
+        <strong>Categoría Científica:</strong> {professor.scientificCategory}
+        <br />
+        <strong>¿Salió al Extranjero?:</strong> {professor.wentAbroad ? "Sí" : "No"}
         <br />
         <strong>Provincia:</strong> {professor.address?.province}
         <br />
