@@ -123,17 +123,19 @@ const ProfessorList = () => {
     }
     showLoading();
     try {
-      // Aquí se usa la función para obtener el promedio de edad
+      const provinceName =
+        provinces.find((prov) => prov.value === searchProvince)?.label || "";
+
       const response = await getAverageAgeProfessors(
         searchArea,
-        searchProvince,
+        provinceName,
         searchWentAbroad
       );
       const avg = response.data.result;
       Swal.fire({
         icon: "info",
         title: "Promedio de Edad",
-        html: `Promedio de edad de <b>${searchArea}</b> en la provincia <b>${searchProvince}</b> y ${
+        html: `Promedio de edad de <b>${searchArea}</b> en la provincia <b>${provinceName}</b> y ${
           searchWentAbroad
             ? "que <b>SÍ</b> salieron al extranjero"
             : "que <b>NO</b> salieron al extranjero"
@@ -354,6 +356,17 @@ const ProfessorList = () => {
         style={{ color: "#ef4444", fontSize: 22, fontWeight: "bold" }}
       />
     );
+
+  const formatDate = (isoString) => {
+    if (!isoString) return "-";
+    const date = new Date(isoString);
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  };
+
+  const birthDateTemplate = (row) => formatDate(row.birthDate);
 
   const provinceTemplate = (row) =>
     row.address ? `${row.address.province}` : "-";
@@ -618,6 +631,7 @@ const ProfessorList = () => {
         <Column field="firstName" header="Nombres" />
         <Column field="lastName" header="Apellidos" />
         <Column body={genderTemplate} header="Género" />
+        <Column body={birthDateTemplate} header="Fecha de Nacimiento" />
         <Column field="age" header="Edad" />
         <Column field="area" header="Departamento" />
         <Column body={wentAbroadTemplate} header="Viaje Ext." />
