@@ -135,11 +135,10 @@ const ProfessorList = () => {
       Swal.fire({
         icon: "info",
         title: "Promedio de Edad",
-        html: `Promedio de edad de <b>${searchArea}</b> en la provincia <b>${provinceName}</b> y ${
-          searchWentAbroad
-            ? "que <b>SÍ</b> salieron al extranjero"
-            : "que <b>NO</b> salieron al extranjero"
-        }<br/>Promedio: <b>${avg}</b>`,
+        html: `Promedio de edad de <b>${searchArea}</b> en la provincia <b>${provinceName}</b> y ${searchWentAbroad
+          ? "que <b>SÍ</b> salieron al extranjero"
+          : "que <b>NO</b> salieron al extranjero"
+          }<br/>Promedio: <b>${avg}</b>`,
       });
     } catch (error) {
       Swal.fire({
@@ -148,6 +147,100 @@ const ProfessorList = () => {
         text:
           error.response?.data?.message ||
           "No se pudo calcular el promedio de edad.",
+      });
+    } finally {
+      hideLoading();
+    }
+  };
+
+  const handleSearchB = async () => {
+    const municipalityName =
+      municipalities.find((mun) => mun.value === searchMunicipality)?.label || "";
+
+    if (!municipalityName) {
+      Swal.fire({
+        icon: "warning",
+        title: "Municipio requerido",
+        text: "Seleccione el municipio a excluir.",
+      });
+      return;
+    }
+
+    showLoading();
+    try {
+      const response = await getOldestProfessorAddress(municipalityName);
+      const prof = response.data?.result?.[0]; // primer elemento de la lista
+
+      if (!prof) {
+        Swal.fire({
+          icon: "info",
+          title: "Sin resultados",
+          text: "No se encontró ningún profesor fuera de ese municipio.",
+        });
+        return;
+      }
+
+      Swal.fire({
+        icon: "info",
+        title: "Profesor más viejo fuera del municipio",
+        html: `
+        <b>${prof.firstName} ${prof.lastName}</b><br/>
+        <b>Dirección:</b> ${prof.address.street} #${prof.address.number}, ${prof.address.municipality}, ${prof.address.province}<br/>
+        <b>Fecha Nacimiento:</b> ${formatDate(prof.birthDate)}
+      `
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response?.data?.message || "No se pudo obtener la dirección del profesor más viejo.",
+      });
+    } finally {
+      hideLoading();
+    }
+  };
+
+  const handleSearchC = async () => {
+    if (!searchAcademicRank || searchWentAbroad == null) {
+      Swal.fire({
+        icon: "warning",
+        title: "Parámetros faltantes",
+        text: "Seleccione la categoría docente y si salió al extranjero.",
+      });
+      return;
+    }
+    showLoading();
+    try {
+      // El nombre de la categoría docente, no el id
+      const academicRankName =
+        academicRankOptions.find((rank) => rank.value === searchAcademicRank)
+          ?.label || "";
+
+      // Llamada al backend con solo los filtros requeridos
+      const response = await searchProfessors(
+        "",              // province
+        "",              // municipality
+        searchWentAbroad, // salió al extranjero
+        academicRankName, // categoría docente
+        ""               // área
+      );
+
+      setProfessors(response.data.result);
+
+      if (!response.data.result.length) {
+        Swal.fire({
+          icon: "info",
+          title: "Sin resultados",
+          text: "No se encontraron profesores con esos filtros.",
+        });
+      }
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          error.response?.data?.message ||
+          "No se pudo listar profesores para los filtros dados.",
       });
     } finally {
       hideLoading();
@@ -341,8 +434,8 @@ const ProfessorList = () => {
     row.gender === "M"
       ? "Masculino"
       : row.gender === "F"
-      ? "Femenino"
-      : row.gender;
+        ? "Femenino"
+        : row.gender;
 
   const wentAbroadTemplate = (row) =>
     row.wentAbroad ? (
@@ -566,7 +659,7 @@ const ProfessorList = () => {
             <Button
               label="Buscar Profesor más Viejo"
               icon="pi pi-user"
-              // onClick={handleSearchE}
+              onClick={handleSearchB}
               className="p-button-warning"
               style={{ borderRadius: 8, height: 40, marginLeft: 6 }}
             />
@@ -596,7 +689,7 @@ const ProfessorList = () => {
             <Button
               label="Listar Profesores"
               icon="pi pi-search"
-              // onClick={handleSearchF}
+              onClick={handleSearchC}
               className="p-button-primary"
               style={{ borderRadius: 8, height: 40, marginLeft: 6 }}
             />
