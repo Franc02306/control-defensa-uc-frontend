@@ -17,10 +17,26 @@ import { Column } from "primereact/column";
 import { Button } from "primereact/button";
 import { Toast } from "primereact/toast";
 import { Dropdown } from "primereact/dropdown";
+import { RadioButton } from "primereact/radiobutton";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useLoading } from "../../context/LoadingContext";
 import ProfessorDetail from "../Professor/ProfessorDetail";
+
+const FILTERS = [
+  {
+    key: "a",
+    label: "Promedio de Edad",
+  },
+  {
+    key: "b",
+    label: "Dirección del profesor más viejo",
+  },
+  {
+    key: "c",
+    label: "Categoría docente y viaje al extranjero",
+  },
+];
 
 const ProfessorList = () => {
   const [professors, setProfessors] = useState([]);
@@ -42,13 +58,20 @@ const ProfessorList = () => {
   const [showDetail, setShowDetail] = useState(false);
   const [selectedProfessor, setSelectedProfessor] = useState(null);
 
-  // Calcular el promedio de edad de estudiantes
-  const [calculatingAvg, setCalculatingAvg] = useState(false);
-
   const toast = useRef(null);
   const navigate = useNavigate();
-
   const { showLoading, hideLoading } = useLoading();
+
+  const [selectedFilter, setSelectedFilter] = useState("c");
+
+  useEffect(() => {
+    setSearchProvince(null);
+    setSearchMunicipality(null);
+    setSearchWentAbroad(null);
+    setSearchAcademicRank(null);
+    setSearchArea(null);
+    setProfessors([]);
+  }, [selectedFilter]);
 
   const fetchProfessors = async ({
     province,
@@ -73,6 +96,46 @@ const ProfessorList = () => {
         detail:
           error.response?.data?.message || "Error al cargar los Profesores.",
         life: 4000,
+      });
+    } finally {
+      hideLoading();
+    }
+  };
+
+  const handleSearchA = async () => {
+    if (!searchArea || !searchProvince || searchWentAbroad == null) {
+      Swal.fire({
+        icon: "warning",
+        title: "Parámetros Faltantes",
+        text: "Seleccione área, provincia y si salió al extranjero.",
+      });
+      return;
+    }
+    showLoading();
+    try {
+      // Aquí usas tu función para obtener el promedio de edad, según filtros.
+      const response = await getAverageAgeProfessors(
+        searchArea,
+        searchProvince,
+        searchWentAbroad
+      );
+      const avg = response.data.result;
+      Swal.fire({
+        icon: "info",
+        title: "Promedio de Edad",
+        html: `Promedio de edad de <b>${searchArea}</b> en la provincia <b>${searchProvince}</b> y ${
+          searchWentAbroad
+            ? "que <b>SÍ</b> salieron al extranjero"
+            : "que <b>NO</b> salieron al extranjero"
+        }<br/>Promedio: <b>${avg}</b>`,
+      });
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text:
+          error.response?.data?.message ||
+          "No se pudo calcular el promedio de edad.",
       });
     } finally {
       hideLoading();
@@ -208,20 +271,6 @@ const ProfessorList = () => {
     });
   };
 
-  const handleClearFilters = () => {
-    setSearchProvince(null);
-    setSearchMunicipality(null);
-    setSearchWentAbroad(null);
-    setSearchAcademicRank(null);
-    setSearchArea(null);
-    fetchProfessors({
-      province: "",
-      municipality: "",
-      wentAbroad: null,
-      academicRank: "",
-    });
-  };
-
   const handleDeleteProfessor = async (professorId) => {
     const result = await Swal.fire({
       title: "¿Seguro que quieres eliminar este profesor?",
@@ -254,46 +303,6 @@ const ProfessorList = () => {
           life: 4000,
         });
       }
-    }
-  };
-
-  // Calcular el promedio de edad de profesores
-  const handleAverageAge = async () => {
-    if (!searchArea || !searchProvince || searchWentAbroad == null) {
-      Swal.fire({
-        icon: "warning",
-        title: "Parámetros Faltantes",
-        text: "Seleccione área, provincia y si salió al extranjero.",
-      });
-      return;
-    }
-    setCalculatingAvg(true);
-    try {
-      const response = await getAverageAgeProfessors(
-        searchArea,
-        searchProvince,
-        searchWentAbroad
-      );
-      const avg = response.data.result;
-      Swal.fire({
-        icon: "info",
-        title: "Información",
-        html: `Se calculó el promedio de edad de <b>${searchArea}</b> en la provincia <b>${searchProvince}</b> y ${
-          searchWentAbroad
-            ? "que <b>SÍ</b> salieron al extranjero"
-            : "que <b>NO</b> salieron al extranjero"
-        }<br/>Promedio: <b>${avg}</b>`,
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Error",
-        text:
-          error.response?.data?.message ||
-          "No se pudo calcular el promedio de edad.",
-      });
-    } finally {
-      setCalculatingAvg(false);
     }
   };
 
@@ -383,163 +392,150 @@ const ProfessorList = () => {
         }}
       >
         <h2 style={{ marginBottom: "0" }}>Lista de Profesores</h2>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Button
-            label="Agregar Profesor"
-            icon="pi pi-plus"
-            className="p-button-success"
-            onClick={() => navigate("/profesores/crear")}
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              padding: "0.5rem 1rem",
-            }}
-          />
-          <Button
-            label="Promedio Edad"
-            icon="pi pi-chart-line"
-            className="p-button-help"
-            onClick={handleAverageAge}
-            disabled={
-              !searchArea ||
-              !searchProvince ||
-              searchWentAbroad == null ||
-              calculatingAvg
-            }
-            loading={calculatingAvg}
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              padding: "0.5rem 1rem",
-            }}
-          />
-        </div>
+        <Button
+          label="Agregar Profesor"
+          icon="pi pi-plus"
+          className="p-button-success"
+          onClick={() => navigate("/profesores/crear")}
+          style={{
+            borderRadius: "8px",
+            height: "40px",
+            padding: "0.5rem 1rem",
+          }}
+        />
       </div>
 
       {/* FILTROS ORDENADOS EN UNA SOLA FILA */}
       <div
         style={{
-          display: "flex",
-          gap: "0.5rem",
-          alignItems: "center",
-          marginBottom: "1rem",
-          flexWrap: "nowrap",
-          justifyContent: "space-between",
+          marginBottom: "1.5rem",
+          background: "#fff",
+          borderRadius: "8px",
+          padding: "1rem",
         }}
       >
-        {/* Filtros principales alineados */}
-        <div
-          style={{
-            display: "flex",
-            gap: "0.5rem",
-            flex: 1,
-            minWidth: 0,
-            alignItems: "center",
-            flexWrap: "nowrap",
-          }}
-        >
-          <Dropdown
-            value={searchProvince}
-            options={provinces}
-            onChange={(e) => setSearchProvince(e.value)}
-            placeholder="Buscar por Provincia..."
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              flex: "0.5",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
-          <Dropdown
-            value={searchMunicipality}
-            options={municipalities}
-            onChange={(e) => setSearchMunicipality(e.value)}
-            placeholder="Buscar por Municipio..."
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              flex: "0.5",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-            disabled={!searchProvince}
-          />
-          <Dropdown
-            value={searchAcademicRank}
-            options={academicRankOptions}
-            onChange={(e) => setSearchAcademicRank(e.value)}
-            placeholder="Categoría Docente"
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              flex: "0.5",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
-          <Dropdown
-            value={searchArea}
-            options={areaOptions}
-            onChange={(e) => setSearchArea(e.value)}
-            placeholder="Departamento/Área"
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              flex: "0.5",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          />
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "0.7rem" }}>
+          {FILTERS.map((f) => (
+            <div key={f.key} style={{ display: "flex", alignItems: "center" }}>
+              <RadioButton
+                inputId={`filter-${f.key}`}
+                name="filter"
+                value={f.key}
+                onChange={() => setSelectedFilter(f.key)}
+                checked={selectedFilter === f.key}
+              />
+              <label
+                htmlFor={`filter-${f.key}`}
+                style={{
+                  marginLeft: "0.5rem",
+                  cursor: "pointer",
+                  fontWeight: selectedFilter === f.key ? 700 : 400,
+                }}
+              >
+                {f.label}
+              </label>
+            </div>
+          ))}
         </div>
-        {/* Filtro switch y botones al extremo derecho */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.7rem",
-            minWidth: "265px",
-            justifyContent: "flex-end",
-          }}
-        >
-          <span style={{ minWidth: 100, fontWeight: 500 }}>
-            Viaje Ext.
-          </span>
-          <InputSwitch
-            checked={searchWentAbroad === true}
-            onChange={(e) => {
-              setSearchWentAbroad(
-                e.value === false && searchWentAbroad !== null ? null : e.value
-              );
-            }}
-          />
-          <Button
-            label="Buscar"
-            icon="pi pi-search"
-            onClick={handleSearch}
-            className="p-button-primary"
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              marginLeft: 6,
-            }}
-          />
-          <Button
-            label="Limpiar filtros"
-            icon="pi pi-eraser"
-            className="p-button-secondary"
-            onClick={handleClearFilters}
-            style={{
-              borderRadius: "8px",
-              height: "40px",
-              padding: "0.5rem 1rem",
-            }}
-          />
+        {/* Descripción */}
+        <div style={{ marginBottom: "1rem", color: "#888", fontSize: 13 }}>
+          {FILTERS.find((f) => f.key === selectedFilter)?.description}
         </div>
+
+        {/* Render dinámico de campos según filtro */}
+        {selectedFilter === "a" && (
+          <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
+            <Dropdown
+              value={searchArea}
+              options={areaOptions}
+              onChange={(e) => setSearchArea(e.value)}
+              placeholder="Área"
+              style={{ borderRadius: 8, height: 40, width: 220 }}
+            />
+            <Dropdown
+              value={searchProvince}
+              options={provinces}
+              onChange={(e) => setSearchProvince(e.value)}
+              placeholder="Provincia"
+              style={{ borderRadius: 8, height: 40, width: 180 }}
+            />
+            <span>¿Salió al extranjero?</span>
+            <InputSwitch
+              checked={searchWentAbroad === true}
+              onChange={(e) =>
+                setSearchWentAbroad(
+                  e.value === false && searchWentAbroad !== null
+                    ? null
+                    : e.value
+                )
+              }
+            />
+            <Button
+              label="Promedio de Edad"
+              icon="pi pi-chart-line"
+              onClick={handleSearchA}
+              className="p-button-help"
+              style={{ borderRadius: 8, height: 40, marginLeft: 6 }}
+            />
+          </div>
+        )}
+
+        {selectedFilter === "b" && (
+          <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
+            <Dropdown
+              value={searchProvince}
+              options={provinces}
+              onChange={(e) => setSearchProvince(e.value)}
+              placeholder="Provincia"
+              style={{ borderRadius: 8, height: 40, width: 180 }}
+            />
+            <Dropdown
+              value={searchMunicipality}
+              options={municipalities}
+              onChange={(e) => setSearchMunicipality(e.value)}
+              placeholder="Municipio"
+              style={{ borderRadius: 8, height: 40, width: 180 }}
+              disabled={!searchProvince}
+            />
+            <Button
+              label="Buscar Profesor más Viejo"
+              icon="pi pi-user"
+              // onClick={handleSearchE}
+              className="p-button-warning"
+              style={{ borderRadius: 8, height: 40, marginLeft: 6 }}
+            />
+          </div>
+        )}
+
+        {selectedFilter === "c" && (
+          <div style={{ display: "flex", gap: "0.7rem", alignItems: "center" }}>
+            <Dropdown
+              value={searchAcademicRank}
+              options={academicRankOptions}
+              onChange={(e) => setSearchAcademicRank(e.value)}
+              placeholder="Categoría Docente"
+              style={{ borderRadius: 8, height: 40, width: 220 }}
+            />
+            <span>¿Salió al extranjero?</span>
+            <InputSwitch
+              checked={searchWentAbroad === true}
+              onChange={(e) =>
+                setSearchWentAbroad(
+                  e.value === false && searchWentAbroad !== null
+                    ? null
+                    : e.value
+                )
+              }
+            />
+            <Button
+              label="Listar Profesores"
+              icon="pi pi-search"
+              // onClick={handleSearchF}
+              className="p-button-primary"
+              style={{ borderRadius: 8, height: 40, marginLeft: 6 }}
+            />
+          </div>
+        )}
       </div>
 
       {/* TABLA */}
