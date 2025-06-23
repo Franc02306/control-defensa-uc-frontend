@@ -70,7 +70,15 @@ const ProfessorList = () => {
     setSearchWentAbroad(null);
     setSearchAcademicRank(null);
     setSearchArea(null);
-    setProfessors([]);
+
+    fetchProfessors({
+      province: "",
+      municipality: "",
+      wentAbroad: null,
+      academicRank: "",
+      area: "",
+    });
+    // eslint-disable-next-line
   }, [selectedFilter]);
 
   const fetchProfessors = async ({
@@ -78,6 +86,7 @@ const ProfessorList = () => {
     municipality,
     wentAbroad,
     academicRank,
+    area,
   }) => {
     showLoading();
     try {
@@ -85,7 +94,8 @@ const ProfessorList = () => {
         province,
         municipality,
         wentAbroad,
-        academicRank
+        academicRank,
+        area
       );
 
       setProfessors(response.data.result);
@@ -113,7 +123,7 @@ const ProfessorList = () => {
     }
     showLoading();
     try {
-      // Aquí usas tu función para obtener el promedio de edad, según filtros.
+      // Aquí se usa la función para obtener el promedio de edad
       const response = await getAverageAgeProfessors(
         searchArea,
         searchProvince,
@@ -142,15 +152,21 @@ const ProfessorList = () => {
     }
   };
 
-  useEffect(() => {
+  const handleClearFilters = () => {
+    setSearchProvince(null);
+    setSearchMunicipality(null);
+    setSearchWentAbroad(null);
+    setSearchAcademicRank(null);
+    setSearchArea(null);
+
     fetchProfessors({
       province: "",
       municipality: "",
       wentAbroad: null,
       academicRank: "",
+      area: "",
     });
-    // eslint-disable-next-line
-  }, []);
+  };
 
   useEffect(() => {
     (async () => {
@@ -160,7 +176,8 @@ const ProfessorList = () => {
         setProvinces(
           response.data.map((p) => ({
             label: p.name,
-            value: p.name,
+            value: p.id,
+            name: p.name,
           }))
         );
       } catch (error) {
@@ -263,11 +280,23 @@ const ProfessorList = () => {
   }, []);
 
   const handleSearch = () => {
+    const provinceName =
+      provinces.find((prov) => prov.value === searchProvince)?.label || "";
+    const municipalityName =
+      municipalities.find((mun) => mun.value === searchMunicipality)?.label ||
+      "";
+    const areaName =
+      areaOptions.find((area) => area.value === searchArea)?.label || "";
+    const academicRankName =
+      academicRankOptions.find((rank) => rank.value === searchAcademicRank)
+        ?.label || "";
+
     fetchProfessors({
-      province: searchProvince,
-      municipality: searchMunicipality,
+      province: provinceName,
+      municipality: municipalityName,
       wentAbroad: searchWentAbroad,
-      academicRank: searchAcademicRank,
+      academicRank: academicRankName,
+      area: areaName,
     });
   };
 
@@ -392,17 +421,41 @@ const ProfessorList = () => {
         }}
       >
         <h2 style={{ marginBottom: "0" }}>Lista de Profesores</h2>
-        <Button
-          label="Agregar Profesor"
-          icon="pi pi-plus"
-          className="p-button-success"
-          onClick={() => navigate("/profesores/crear")}
-          style={{
-            borderRadius: "8px",
-            height: "40px",
-            padding: "0.5rem 1rem",
-          }}
-        />
+        <div style={{ display: "flex", gap: "0.7rem" }}>
+          <Button
+            label="Buscar"
+            icon="pi pi-search"
+            className="p-button-primary"
+            onClick={handleSearch}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1.3rem",
+            }}
+          />
+          <Button
+            label="Limpiar filtros"
+            icon="pi pi-eraser"
+            className="p-button-secondary"
+            onClick={handleClearFilters}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1.1rem",
+            }}
+          />
+          <Button
+            label="Agregar"
+            icon="pi pi-plus"
+            className="p-button-success"
+            onClick={() => navigate("/profesores/crear")}
+            style={{
+              borderRadius: "8px",
+              height: "40px",
+              padding: "0.5rem 1rem",
+            }}
+          />
+        </div>
       </div>
 
       {/* FILTROS ORDENADOS EN UNA SOLA FILA */}
@@ -449,7 +502,7 @@ const ProfessorList = () => {
               value={searchArea}
               options={areaOptions}
               onChange={(e) => setSearchArea(e.value)}
-              placeholder="Área"
+              placeholder="Departamento"
               style={{ borderRadius: 8, height: 40, width: 220 }}
             />
             <Dropdown

@@ -265,7 +265,7 @@ const StudentList = () => {
         <h2 style={{ marginBottom: "0" }}>Lista de Estudiantes</h2>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <Button
-            label="Agregar Estudiante"
+            label="Agregar"
             icon="pi pi-plus"
             className="p-button-success"
             onClick={() => navigate("/estudiantes/crear")}

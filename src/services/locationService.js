@@ -6,5 +6,5 @@ export const getProvinces = () => {
 };
 
 export const getMunicipalitiesByProvince = (provinceId) => {
-  return API.get(`/location/municipality/by-province${provinceId}`);
+  return API.get(`/location/municipality/by-province/${provinceId}`);
 };

@@ -15,7 +15,8 @@ export const searchProfessors = (
   province,
   municipality,
   wentAbroad,
-  academicRank
+  academicRank,
+  area
 ) => {
   return API.get("/professor/search", {
     params: {
@@ -23,6 +24,7 @@ export const searchProfessors = (
       municipality,
       wentAbroad,
       academicRank,
+      area
     },
   });
 };
